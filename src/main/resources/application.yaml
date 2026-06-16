@@ -10,11 +10,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     show-sql: false
 
   flyway:
-    enabled: false
+    enabled: true
 
   mongodb:
     host: ${MONGO_HOST:localhost}
