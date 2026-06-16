@@ -6,7 +6,10 @@ COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 COPY src/ src/
 
-RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && ./mvnw package -DskipTests -B --no-transfer-progress
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw && \
+    ./mvnw package -DskipTests -B --no-transfer-progress \
+    -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false \
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
 
 FROM eclipse-temurin:21-jre-jammy
 

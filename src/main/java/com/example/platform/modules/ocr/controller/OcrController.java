@@ -7,6 +7,7 @@ import com.example.platform.modules.ocr.dto.OcrUploadResponse;
 import com.example.platform.modules.ocr.repository.OcrImageRepository;
 import com.example.platform.modules.ocr.service.OcrService;
 import com.example.platform.mongo.document.OcrImageDocument;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,7 @@ public class OcrController {
     }
 
     // آپلود تصویر و استخراج متن
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<OcrUploadResponse> upload(
             @RequestParam("file") MultipartFile file) throws IOException {
 

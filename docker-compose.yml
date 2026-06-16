@@ -7,9 +7,9 @@ services:
     environment:
       POSTGRES_DB: platform_db
       POSTGRES_USER: platform_user
-      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: platform123
     ports:
-      - "5432:5432"
+      - "5440:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -61,7 +61,7 @@ services:
       DB_PORT: 5432
       DB_NAME: platform_db
       DB_USERNAME: platform_user
-      DB_PASSWORD: ""
+      DB_PASSWORD: platform123
 
       MONGO_HOST: mongodb
       MONGO_PORT: 27017
