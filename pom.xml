@@ -21,9 +21,10 @@
 		<mongock.version>5.5.1</mongock.version>
 	</properties>
 
+	<!-- dependencyManagement رو اضافه کن یا به بخش موجود اضافه کن -->
 	<dependencyManagement>
 		<dependencies>
-			<!-- Mongock BOM — نسخه همه artifact های mongock رو یکجا مدیریت میکنه -->
+			<!-- Mongock BOM -->
 			<dependency>
 				<groupId>io.mongock</groupId>
 				<artifactId>mongock-bom</artifactId>
@@ -31,8 +32,18 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<!-- SpringDoc BOM -->
+			<dependency>
+				<groupId>org.springdoc</groupId>
+				<artifactId>springdoc-openapi-bom</artifactId>
+				<version>3.0.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+
 
 	<dependencies>
 
@@ -64,6 +75,12 @@
 			<groupId>com.pgvector</groupId>
 			<artifactId>pgvector</artifactId>
 			<version>0.1.4</version>
+		</dependency>
+
+		<!-- dependency رو بدون version بذار -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 
 		<!-- ===== Flyway for PostgreSQL ===== -->
@@ -116,11 +133,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>3.0.3</version>
-		</dependency>
 
 		<!-- OCR -->
 		<dependency>
