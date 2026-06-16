@@ -1,0 +1,103 @@
+version: '3.9'
+
+# ═══════════════════════════════════════════════════════════════════
+#  MFTPlus Chatbot Platform — Full Stack
+#  راه‌اندازی: docker compose up --build
+#  تنها پیش‌نیاز: Docker Desktop نصب باشد
+# ═══════════════════════════════════════════════════════════════════
+
+services:
+
+  # ─── PostgreSQL 17 ───────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: platform-postgres
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-platform_db}
+      POSTGRES_USER:     ${DB_USERNAME:-platform_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-platform_pass}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-platform_user} -d ${DB_NAME:-platform_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── MongoDB 8.0 ────────────────────────────────────────────────
+  mongodb:
+    image: mongo:8.0
+    container_name: platform-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-platform_mongo}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── Redis 8 ────────────────────────────────────────────────────
+  redis:
+    image: redis:8-alpine
+    container_name: platform-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ─── Application ─────────────────────────────────────────────────
+  #  اولین بار: docker compose up --build
+  #  بعد از تغییر کد: docker compose up --build app
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: platform-app
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      # PostgreSQL
+      DB_HOST:     postgres
+      DB_PORT:     5432
+      DB_NAME:     ${DB_NAME:-platform_db}
+      DB_USERNAME: ${DB_USERNAME:-platform_user}
+      DB_PASSWORD: ${DB_PASSWORD:-platform_pass}
+      # MongoDB
+      MONGO_HOST:  mongodb
+      MONGO_PORT:  27017
+      MONGO_DB:    ${MONGO_DB:-platform_mongo}
+      # Redis
+      REDIS_HOST:  redis
+      REDIS_PORT:  6379
+      # App
+      SERVER_PORT: 8080
+      # OCR — Tesseract در Docker نصب است
+      OCR_TESSDATA_PATH: /usr/share/tesseract-ocr/5/tessdata
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+# ─── Volumes ────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:

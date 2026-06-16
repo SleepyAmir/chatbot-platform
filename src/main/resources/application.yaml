@@ -1,3 +1,134 @@
 spring:
   application:
     name: platform
+
+  # ═══════════════════════════════════════════════════════
+  #  PostgreSQL (برای ماژول‌های career, chatlog, course, qa, search)
+  # ═══════════════════════════════════════════════════════
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:platform_db}
+    username: ${DB_USERNAME:platform_user}
+    password: ${DB_PASSWORD:platform_pass}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      pool-name: PlatformHikariPool
+
+  # ═══════════════════════════════════════════════════════
+  #  JPA / Hibernate
+  # ═══════════════════════════════════════════════════════
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Flyway مدیر schema هست، Hibernate فقط validate می‌کند
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  # ═══════════════════════════════════════════════════════
+  #  Flyway — مدیریت migration های PostgreSQL
+  # ═══════════════════════════════════════════════════════
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+  # ═══════════════════════════════════════════════════════
+  #  MongoDB (برای OCR و سایر document-based data)
+  # ═══════════════════════════════════════════════════════
+  data:
+    mongodb:
+      auto-index-creation: true
+
+    # ═══════════════════════════════════════════════════════
+    #  Redis (برای ماژول cache)
+    # ═══════════════════════════════════════════════════════
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 4
+          min-idle: 1
+          max-wait: 1000ms
+
+  # ═══════════════════════════════════════════════════════
+  #  Cache (Redis-backed Spring Cache)
+  # ═══════════════════════════════════════════════════════
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000        # 5 دقیقه (میلی‌ثانیه)
+      cache-null-values: false
+
+  # ═══════════════════════════════════════════════════════
+  #  آپلود فایل — برای endpoint های OCR
+  # ═══════════════════════════════════════════════════════
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 15MB
+  web:
+    error:
+      include-binding-errors: always
+      include-message: always
+  mongodb:
+    uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DB:platform_mongo}
+
+# ═══════════════════════════════════════════════════════
+#  Mongock — مدیریت migration های MongoDB
+# ═══════════════════════════════════════════════════════
+mongock:
+  migration-scan-package:
+    - com.example.platform.mongo.migration   # اینجا ChangeLog های MongoDB را بگذار
+  enabled: false
+
+# ═══════════════════════════════════════════════════════
+#  Server
+# ═══════════════════════════════════════════════════════
+server:
+  port: ${SERVER_PORT:8080}
+
+# ═══════════════════════════════════════════════════════
+#  OCR — مسیر tessdata
+#  در حالت local: خالی بگذار → از classpath/tessdata بارگذاری می‌شود
+#  در Docker: از طریق env var OCR_TESSDATA_PATH تنظیم می‌شود
+# ═══════════════════════════════════════════════════════
+ocr:
+  tessdata-path: ${OCR_TESSDATA_PATH:}
+  language: ${OCR_LANGUAGE:fas}             # fas = فارسی، eng = انگلیسی
+
+# ═══════════════════════════════════════════════════════
+#  Swagger / OpenAPI — قابل دسترس در http://localhost:8080/swagger-ui.html
+# ═══════════════════════════════════════════════════════
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  show-actuator: false
+
+# ═══════════════════════════════════════════════════════
+#  Logging
+# ═══════════════════════════════════════════════════════
+logging:
+  level:
+    com.example.platform: DEBUG
+    org.springframework.data.mongodb.core: INFO
+    org.flywaydb: INFO
+    io.mongock: INFO
