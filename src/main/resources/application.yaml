@@ -15,6 +15,9 @@ spring:
 
   flyway:
     enabled: true
+    location: classpath:db/migration
+    validate-on-migrate: true
+
 
   mongodb:
     host: ${MONGO_HOST:localhost}
