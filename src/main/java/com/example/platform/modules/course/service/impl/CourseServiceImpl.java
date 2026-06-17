@@ -1,8 +1,8 @@
 package com.example.platform.modules.course.service.impl;
 
 import com.example.platform.common.exception.ResourceNotFoundException;
-import com.example.platform.modules.course.dto.CourseRequest;
-import com.example.platform.modules.course.dto.CourseResponse;
+import com.example.platform.modules.course.dto.request.CourseRequest;
+import com.example.platform.modules.course.dto.response.CourseResponse;
 import com.example.platform.modules.course.model.Course;
 import com.example.platform.modules.course.mapper.CourseMapper;
 import com.example.platform.modules.course.repository.CourseRepository;
@@ -62,14 +62,8 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public CourseResponse createCourse(CourseRequest request) {
         validateCourseNameIsUnique(request.name());
-
         Course course = courseMapper.toEntity(request);
         Course savedCourse = courseRepository.saveAndFlush(course);
-
-        // No entityManager.refresh() here: @CreationTimestamp already populates
-        // createdAt in memory before the INSERT is sent, so the in-memory entity
-        // already matches the row in the database. (Contrast with CourseDetail,
-        // where updated_at really is filled by a DB trigger and DOES need a refresh.)
         return courseMapper.toResponse(savedCourse);
     }
 

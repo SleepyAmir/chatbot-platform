@@ -1,4 +1,4 @@
-package com.example.platform.modules.course.dto;
+package com.example.platform.modules.course.dto.request;
 
 public record CourseDetailRequest(
         String price,

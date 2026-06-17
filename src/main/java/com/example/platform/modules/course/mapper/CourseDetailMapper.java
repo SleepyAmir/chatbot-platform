@@ -1,7 +1,7 @@
 package com.example.platform.modules.course.mapper;
 
-import com.example.platform.modules.course.dto.CourseDetailRequest;
-import com.example.platform.modules.course.dto.CourseDetailResponse;
+import com.example.platform.modules.course.dto.request.CourseDetailRequest;
+import com.example.platform.modules.course.dto.response.CourseDetailResponse;
 import com.example.platform.modules.course.model.Course;
 import com.example.platform.modules.course.model.CourseDetail;
 import org.mapstruct.BeanMapping;
@@ -33,15 +33,9 @@ public abstract class CourseDetailMapper {
         return detail;
     }
 
-    /**
-     * NOTE on semantics: same PARTIAL-update behavior as CourseMapper — null fields
-     * in the request are ignored rather than used to clear existing values. PUT here
-     * behaves like PATCH; document this for API consumers.
-     */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "course", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     public abstract void updateEntityFromRequest(
             CourseDetailRequest request,
             @MappingTarget CourseDetail detail
