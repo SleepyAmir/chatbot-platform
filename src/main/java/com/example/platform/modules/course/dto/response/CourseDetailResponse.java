@@ -1,6 +1,4 @@
-package com.example.platform.modules.course.dto;
-
-import java.time.OffsetDateTime;
+package com.example.platform.modules.course.dto.response;
 
 public record CourseDetailResponse(
         Integer id,
@@ -15,7 +13,6 @@ public record CourseDetailResponse(
         String prerequisite,
         String syllabus,
         String startTime,
-        String courseCode,
-        OffsetDateTime updatedAt
+        String courseCode
 ) {
 }

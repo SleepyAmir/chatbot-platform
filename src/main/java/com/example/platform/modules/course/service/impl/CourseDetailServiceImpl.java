@@ -1,8 +1,8 @@
 package com.example.platform.modules.course.service.impl;
 
 import com.example.platform.common.exception.ResourceNotFoundException;
-import com.example.platform.modules.course.dto.CourseDetailRequest;
-import com.example.platform.modules.course.dto.CourseDetailResponse;
+import com.example.platform.modules.course.dto.request.CourseDetailRequest;
+import com.example.platform.modules.course.dto.response.CourseDetailResponse;
 import com.example.platform.modules.course.model.Course;
 import com.example.platform.modules.course.model.CourseDetail;
 import com.example.platform.modules.course.mapper.CourseDetailMapper;

@@ -1,7 +1,7 @@
 package com.example.platform.modules.course.service;
 
-import com.example.platform.modules.course.dto.CourseRequest;
-import com.example.platform.modules.course.dto.CourseResponse;
+import com.example.platform.modules.course.dto.request.CourseRequest;
+import com.example.platform.modules.course.dto.response.CourseResponse;
 import com.example.platform.modules.course.model.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
