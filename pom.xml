@@ -50,6 +50,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- ===== Thymeleaf (صفحه‌ی تست چت با رندر سرور-ساید) ===== -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 		<!-- ===== WebClient (WebFlux) ===== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -159,14 +165,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
 
-    </dependencies>
+		<!-- ===== thymeleaf ===== -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>
