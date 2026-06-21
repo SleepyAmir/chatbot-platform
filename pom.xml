@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -23,10 +23,8 @@
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 	</properties>
 
-	<!-- dependencyManagement رو اضافه کن یا به بخش موجود اضافه کن -->
 	<dependencyManagement>
 		<dependencies>
-			<!-- Mongock BOM -->
 			<dependency>
 				<groupId>io.mongock</groupId>
 				<artifactId>mongock-bom</artifactId>
@@ -34,7 +32,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!-- SpringDoc BOM -->
 			<dependency>
 				<groupId>org.springdoc</groupId>
 				<artifactId>springdoc-openapi-bom</artifactId>
@@ -45,8 +42,6 @@
 		</dependencies>
 	</dependencyManagement>
 
-
-
 	<dependencies>
 
 		<!-- ===== Web ===== -->
@@ -55,13 +50,19 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- ===== WebClient (WebFlux) ===== -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
 		<!-- ===== Validation ===== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
-		<!-- ===== JPA + PostgreSQL 17 ===== -->
+		<!-- ===== JPA + PostgreSQL ===== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -71,18 +72,16 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
 
-		<!-- ===== pgvector 0.8.2 ===== -->
+		<!-- ===== pgvector ===== -->
 		<dependency>
 			<groupId>com.pgvector</groupId>
 			<artifactId>pgvector</artifactId>
 			<version>0.1.4</version>
-		</dependency>
-
-		<!-- dependency رو بدون version بذار -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 		</dependency>
 
 		<!-- ===== Flyway for PostgreSQL ===== -->
@@ -95,13 +94,13 @@
 			<artifactId>flyway-database-postgresql</artifactId>
 		</dependency>
 
-		<!-- ===== MongoDB 8.0 ===== -->
+		<!-- ===== MongoDB ===== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
-		<!-- ===== Mongock — migration tool for MongoDB ===== -->
+		<!-- ===== Mongock ===== -->
 		<dependency>
 			<groupId>io.mongock</groupId>
 			<artifactId>mongock-springboot</artifactId>
@@ -111,7 +110,7 @@
 			<artifactId>mongodb-springdata-v4-driver</artifactId>
 		</dependency>
 
-		<!-- ===== Redis 8.6 + Cache ===== -->
+		<!-- ===== Redis + Cache ===== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
@@ -121,6 +120,12 @@
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
 
+		<!-- ===== SpringDoc OpenAPI ===== -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		</dependency>
+
 		<!-- ===== Lombok ===== -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -128,17 +133,24 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- ===== MapStruct ===== -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok-mapstruct-binding</artifactId>
 			<version>${lombok-mapstruct-binding.version}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- ===== OCR ===== -->
+		<dependency>
+			<groupId>net.sourceforge.tess4j</groupId>
+			<artifactId>tess4j</artifactId>
+			<version>5.13.0</version>
 		</dependency>
 
 		<!-- ===== Test ===== -->
@@ -147,18 +159,29 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<!-- OCR -->
-		<dependency>
-			<groupId>net.sourceforge.tess4j</groupId>
-			<artifactId>tess4j</artifactId>
-			<version>5.13.0</version>
-		</dependency>
-
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
