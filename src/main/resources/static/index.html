@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کنسول تست چت‌بات</title>
+    <style>
+        :root{
+            --bg:        #0d1117;
+            --panel:     #11161d;
+            --panel-2:   #161c25;
+            --line:      #232b36;
+            --text:      #e6edf3;
+            --muted:     #6e7b8c;
+            --accent:    #5eead4;
+            --accent-dim:#1f3d39;
+            --user-bub:  #1f3d39;
+            --bot-bub:   #1a2230;
+            --err:       #ff6b6b;
+            --err-bg:    #2a1518;
+            --mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            --sans: -apple-system, 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---------- Top bar: connection / config ---------- */
+        .topbar {
+            border-bottom: 1px solid var(--line);
+            background: var(--panel);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .topbar .brand {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: .02em;
+            margin-left: 4px;
+        }
+        .topbar .brand b { color: var(--text); }
+
+        .topbar input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-family: var(--mono);
+            font-size: 12.5px;
+            padding: 7px 10px;
+            border-radius: 6px;
+            direction: ltr;
+            text-align: left;
+        }
+        .topbar input[type="text"]:focus { outline: 1px solid var(--accent); }
+
+        .topbar button {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 12px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .topbar button:hover { color: var(--text); border-color: var(--accent); }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+            flex: none;
+        }
+        .status-dot.ok    { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+        .status-dot.error { background: var(--err); box-shadow: 0 0 6px var(--err); }
+
+        /* ---------- Session info strip ---------- */
+        .session-strip {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            padding: 6px 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 18px;
+            background: var(--bg);
+        }
+        .session-strip span b { color: var(--accent); font-weight: 500; }
+        .session-strip .reset-link {
+            color: var(--muted);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-right: auto;
+        }
+        .session-strip .reset-link:hover { color: var(--err); }
+
+        /* ---------- Chat area ---------- */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 760px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .empty-state {
+            margin: auto;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .empty-state code {
+            font-family: var(--mono);
+            background: var(--panel-2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .row { display: flex; flex-direction: column; max-width: 78%; }
+        /* در dir="rtl" محور cross سواپ می‌شود؛ flex-start پیام را در سمت راست بصری
+           قرار می‌دهد (عرف چت‌اپ‌های فارسی: پیام «من» سمت راست). */
+        .row.user { align-self: flex-start; align-items: flex-start; }
+        .row.bot, .row.error { align-self: flex-end; align-items: flex-end; }
+
+        .bubble {
+            padding: 11px 15px;
+            border-radius: 14px;
+            font-size: 14.5px;
+            line-height: 1.75;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .row.user .bubble {
+            background: var(--user-bub);
+            border: 1px solid #2c5b54;
+            border-bottom-right-radius: 4px;
+        }
+        .row.bot .bubble {
+            background: var(--bot-bub);
+            border: 1px solid var(--line);
+            border-bottom-left-radius: 4px;
+        }
+        .row.error .bubble {
+            background: var(--err-bg);
+            border: 1px solid #5c2a2a;
+            color: var(--err);
+            border-bottom-left-radius: 4px;
+        }
+
+        .meta-line {
+            font-family: var(--mono);
+            font-size: 10.5px;
+            color: var(--muted);
+            margin-top: 4px;
+            padding: 0 4px;
+            display: flex;
+            gap: 8px;
+            direction: ltr;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 7px; height: 14px;
+            background: var(--accent);
+            margin-right: 2px;
+            vertical-align: -2px;
+            animation: blink 0.9s steps(1) infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .typing-row .bubble {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 13px 16px;
+        }
+        .typing-row .dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--muted);
+            animation: bounce 1.1s infinite ease-in-out;
+        }
+        .typing-row .dot:nth-child(2) { animation-delay: .15s; }
+        .typing-row .dot:nth-child(3) { animation-delay: .3s; }
+        @keyframes bounce { 0%,80%,100%{ transform: scale(.6); opacity:.4 } 40%{ transform: scale(1); opacity: 1 } }
+
+        /* ---------- Composer ---------- */
+        .composer {
+            border-top: 1px solid var(--line);
+            background: var(--panel);
+            padding: 12px 16px 16px;
+        }
+        .composer form {
+            max-width: 760px;
+            margin: 0 auto;
+            display: flex;
+            gap: 8px;
+        }
+        .composer textarea {
+            flex: 1;
+            resize: none;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14.5px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            line-height: 1.5;
+            max-height: 140px;
+        }
+        .composer textarea:focus { outline: 1px solid var(--accent); }
+        .composer button {
+            background: var(--accent);
+            color: #06231f;
+            border: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            padding: 0 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            flex: none;
+        }
+        .composer button:disabled { opacity: .4; cursor: not-allowed; }
+        .composer .hint {
+            max-width: 760px;
+            margin: 6px auto 0;
+            font-size: 11px;
+            color: var(--muted);
+            font-family: var(--mono);
+        }
+
+        @media (max-width: 560px) {
+            .row { max-width: 90%; }
+            .session-strip { flex-wrap: wrap; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <span class="status-dot" id="statusDot"></span>
+    <span class="brand"><b>chat</b>console</span>
+    <input type="text" id="baseUrlInput" value="http://localhost:8081" spellcheck="false">
+    <button id="pingBtn" type="button">بررسی اتصال</button>
+</div>
+
+<div class="session-strip">
+    <span>session: <b id="sessionIdLabel">—</b></span>
+    <span>پیام‌ها: <b id="msgCountLabel">0</b></span>
+    <span class="reset-link" id="resetBtn">شروع گفتگوی جدید</span>
+</div>
+
+<div class="chat-area" id="chatArea">
+    <div class="empty-state" id="emptyState">
+        آدرس سرور را بالا تنظیم کنید و پیامی بفرستید.<br>
+        این صفحه مستقیماً <code>POST {baseUrl}/api/chat</code> را صدا می‌زند.<br>
+        <span style="font-size:11px">با پروفایل local/dev سرور، CORS باز است؛ اگر روی prod اجرا می‌کنید و خطای CORS گرفتید، باید origin این صفحه را در DevCorsConfig یا معادلش اضافه کنید.</span>
+    </div>
+</div>
+
+<div class="composer">
+    <form id="chatForm">
+        <textarea id="questionInput" rows="1" placeholder="سوالتو بنویس... (Enter برای ارسال، Shift+Enter خط جدید)"></textarea>
+        <button type="submit" id="sendBtn">ارسال</button>
+    </form>
+    <div class="hint" id="latencyHint">&nbsp;</div>
+</div>
+
+<script>
+    (function () {
+        'use strict';
+
+        const chatArea      = document.getElementById('chatArea');
+        const emptyState     = document.getElementById('emptyState');
+        const form            = document.getElementById('chatForm');
+        const input            = document.getElementById('questionInput');
+        const sendBtn            = document.getElementById('sendBtn');
+        const baseUrlInput        = document.getElementById('baseUrlInput');
+        const pingBtn              = document.getElementById('pingBtn');
+        const statusDot              = document.getElementById('statusDot');
+        const sessionIdLabel           = document.getElementById('sessionIdLabel');
+        const msgCountLabel              = document.getElementById('msgCountLabel');
+        const resetBtn                     = document.getElementById('resetBtn');
+        const latencyHint                   = document.getElementById('latencyHint');
+
+        let sessionId = null;
+        let msgCount = 0;
+
+        // ---------- helpers ----------
+        function getBaseUrl() {
+            return baseUrlInput.value.trim().replace(/\/+$/, '');
+        }
+
+        function formatTime(date) {
+            const pad = n => String(n).padStart(2, '0');
+            return pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+        }
+
+        function clearEmptyState() {
+            if (emptyState && emptyState.parentNode) emptyState.remove();
+        }
+
+        function scrollToBottom() {
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addRow(kind, text, metaParts) {
+            clearEmptyState();
+            const row = document.createElement('div');
+            row.className = 'row ' + kind;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.textContent = text;
+            row.appendChild(bubble);
+
+            const meta = document.createElement('div');
+            meta.className = 'meta-line';
+            meta.textContent = (metaParts || []).join('  ·  ');
+            row.appendChild(meta);
+
+            chatArea.appendChild(row);
+            scrollToBottom();
+            return { row, bubble, meta };
+        }
+
+        function addTypingRow() {
+            clearEmptyState();
+            const row = document.createElement('div');
+            row.className = 'row bot typing-row';
+            row.innerHTML = '<div class="bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+            chatArea.appendChild(row);
+            scrollToBottom();
+            return row;
+        }
+
+        function typewrite(el, text, onDone) {
+            el.textContent = '';
+
+            if (!text) {
+                if (onDone) onDone();
+                return;
+            }
+
+            const cursor = document.createElement('span');
+            cursor.className = 'cursor';
+            el.appendChild(cursor);
+
+            let i = 0;
+            const speed = text.length > 400 ? 4 : 14; // طولانی‌ها سریع‌تر تایپ شوند
+            const interval = setInterval(() => {
+                cursor.remove();
+                el.textContent = text.slice(0, i + 1);
+                el.appendChild(cursor);
+                i++;
+                scrollToBottom();
+                if (i >= text.length) {
+                    clearInterval(interval);
+                    cursor.remove();
+                    if (onDone) onDone();
+                }
+            }, speed);
+        }
+
+        function setStatus(state) {
+            statusDot.className = 'status-dot' + (state ? ' ' + state : '');
+        }
+
+        function updateSessionStrip() {
+            sessionIdLabel.textContent = sessionId ? sessionId : '—';
+            msgCountLabel.textContent = String(msgCount);
+        }
+
+        // ---------- connection check ----------
+        async function ping() {
+            setStatus('');
+            try {
+                // /api/chat همیشه HTTP 200 برمی‌گرداند (حتی برای سوال خالی)؛
+                // خطاها در بدنه‌ی JSON هستند نه status code. پس فقط res.ok کافی است.
+                const res = await fetch(getBaseUrl() + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: '' })
+                });
+                setStatus(res.ok ? 'ok' : 'error');
+            } catch (e) {
+                setStatus('error');
+            }
+        }
+        pingBtn.addEventListener('click', ping);
+
+        // ---------- reset session ----------
+        resetBtn.addEventListener('click', () => {
+            sessionId = null;
+            msgCount = 0;
+            chatArea.innerHTML = '';
+            chatArea.appendChild(emptyState);
+            updateSessionStrip();
+            input.focus();
+        });
+
+        // ---------- textarea auto-grow + Enter to send ----------
+        input.addEventListener('input', () => {
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+        });
+
+        // ---------- send message ----------
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = input.value.trim();
+            if (!question) return;
+
+            input.value = '';
+            input.style.height = 'auto';
+            sendBtn.disabled = true;
+            latencyHint.innerHTML = '&nbsp;';
+
+            const sentAt = new Date();
+            addRow('user', question, [formatTime(sentAt)]);
+            msgCount++;
+            updateSessionStrip();
+
+            const typingRow = addTypingRow();
+            const startedAt = performance.now();
+
+            try {
+                const res = await fetch(getBaseUrl() + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question,
+                        sessionId: sessionId
+                    })
+                });
+
+                const elapsedMs = Math.round(performance.now() - startedAt);
+                let data;
+                try {
+                    data = await res.json();
+                } catch {
+                    throw new Error('پاسخ سرور JSON معتبر نبود (HTTP ' + res.status + ')');
+                }
+
+                typingRow.remove();
+                setStatus('ok');
+
+                if (data.sessionId) {
+                    sessionId = data.sessionId;
+                    updateSessionStrip();
+                }
+
+                const receivedAt = new Date();
+                const kind = data.success ? 'bot' : 'error';
+                const text = data.success ? (data.answer || '') : (data.error || 'خطای نامشخص از سرور');
+
+                const { bubble, meta } = addRow(kind, '', [formatTime(receivedAt), elapsedMs + 'ms']);
+                msgCount++;
+                updateSessionStrip();
+                latencyHint.textContent = 'آخرین پاسخ: ' + elapsedMs + 'ms   ·   HTTP ' + res.status;
+
+                typewrite(bubble, text, scrollToBottom);
+
+            } catch (err) {
+                typingRow.remove();
+                setStatus('error');
+                addRow('error', 'اتصال به سرور برقرار نشد: ' + err.message, [formatTime(new Date())]);
+                latencyHint.textContent = 'درخواست شکست خورد — کنسول مرورگر (F12) را برای جزئیات CORS/شبکه ببینید.';
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        });
+
+        updateSessionStrip();
+    })();
+</script>
+
+</body>
+</html>
