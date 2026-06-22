@@ -2,31 +2,30 @@ spring:
   application:
     name: platform
 
-  profiles:
-    active: local
-
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5440}/${DB_NAME:platform_db}
-    username: ${DB_USERNAME:platform_user}
-    password: ${DB_PASSWORD:platform123}
-    driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5440}/${DB_NAME:platform_db}
+      username: ${DB_USERNAME:platform_user}
+      password: ${DB_PASSWORD:platform123}
+      driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
     show-sql: false
-    open-in-view: false
 
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    location: classpath:db/migration
     validate-on-migrate: true
 
-  data:
-    mongodb:
-      uri: mongodb://${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DB:platform_mongo}
-      auto-index-creation: true
 
+  mongodb:
+    host: ${MONGO_HOST:localhost}
+    port: ${MONGO_PORT:27017}
+    database: ${MONGO_DB:platform_mongo}
+    auto-index-creation: true
+
+  data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
@@ -45,13 +44,11 @@ server:
   port: ${SERVER_PORT:8081}
 
 ocr:
-  tessdata-path: ${OCR_TESSDATA_PATH:src/main/resources/tessdata}
+  tessdata-path: ${OCR_TESSDATA_PATH:src/main/resources/testdata}
   language: ${OCR_LANGUAGE:fas}
 
 mongock:
-  enabled: true
-  migration-scan-package:
-    - com.example.platform.config.migration
+  enabled: false
 
 springdoc:
   swagger-ui:
@@ -61,38 +58,6 @@ springdoc:
     path: /v3/api-docs
     enabled: true
 
-openai:
-  api-key: ${OPENAI_API_KEY:}
-  embedding:
-    model: text-embedding-3-small
-  base-url: https://api.openai.com/v1
-
-embedding:
-  # باید با ستون vector(384) در qa_embeddings هماهنگ بماند؛ هم FakeEmbeddingClient و هم
-  # OpenAiEmbeddingClient از همین یک مقدار می‌خوانند تا دو محیط هیچ‌وقت drift نکنند.
-  dimensions: ${EMBEDDING_DIMENSIONS:384}
-
-clients:
-  intent:
-    base-url: ${INTENT_SERVICE_URL:http://intent-service}
-  ocr:
-    base-url: ${OCR_SERVICE_URL:http://ocr-service}
-  llm:
-    base-url: ${LLM_SERVICE_URL:http://llm-service}
-  rerank:
-    base-url: ${RERANK_SERVICE_URL:http://rerank-service}
-
-qa:
-  search:
-    top-k: ${QA_SEARCH_TOP_K:10}
-    min-vector-similarity: ${QA_SEARCH_MIN_VECTOR_SIMILARITY:0.55}
-    min-rerank-score: ${QA_SEARCH_MIN_RERANK_SCORE:0.78}
-
 logging:
   level:
     com.example.platform: DEBUG
-    io.mongock: DEBUG
-  pattern:
-    # %X{traceId} همان شناسه‌ای است که OrchestratorService.chat() در MDC می‌گذارد،
-    # تا همه‌ی لاگ‌های مربوط به یک درخواست (در همه‌ی کلاس‌ها) با هم قابل grep باشند.
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [traceId=%X{traceId:-no-trace}] %logger{36} - %msg%n"
