@@ -438,9 +438,3 @@ src/main/resources/
 ---
 
 ## نکات توسعه
-
-**تغییر ابعاد embedding:** مقدار `EMBEDDING_DIMENSIONS` در `application.yml` باید با ستون `vector(N)` در `qa_embeddings` هماهنگ باشد. برای تغییر، یک migration جدید Flyway بنویسید و FakeEmbeddingClient را نیز به‌روزرسانی کنید.
-
-**افزودن intent جدید:** مقدار ثابت را به `ChatIntents.java` اضافه کنید، آن را به `ALLOWED_INTENTS` در `RealIntentClient` اضافه کنید، و یک handler در `OrchestratorService` تعریف کنید.
-
-**تنظیم آستانه‌های جستجو:** مقادیر `QA_SEARCH_MIN_VECTOR_SIMILARITY` و `QA_SEARCH_MIN_RERANK_SCORE` را از طریق متغیر محیطی تنظیم کنید — بدون نیاز به build مجدد.
