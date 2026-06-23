@@ -29,3 +29,4 @@ public class Intent {
     private LocalDateTime createdAt;
 
 }
+
