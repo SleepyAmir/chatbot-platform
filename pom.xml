@@ -23,7 +23,6 @@
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 	</properties>
 
-	<!-- dependencyManagement رو اضافه کن یا به بخش موجود اضافه کن -->
 	<dependencyManagement>
 		<dependencies>
 			<!-- Mongock BOM -->
@@ -79,7 +78,7 @@
 			<version>0.1.4</version>
 		</dependency>
 
-		<!-- dependency رو بدون version بذار -->
+
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
