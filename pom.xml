@@ -120,12 +120,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.codemonstur</groupId>
+			<artifactId>embedded-redis</artifactId>
+			<version>1.4.3</version>
+		</dependency>
 
 		<!-- ===== Lombok ===== -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>1.0.2</version>
 		</dependency>
 
 		<dependency>
