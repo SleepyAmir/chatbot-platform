@@ -51,4 +51,17 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             @Param("intentId") Integer intentId
     );
 
+    @Query("""
+            SELECT COUNT(qi)
+            FROM qaIntentEntity qi
+            WHERE qi.intent.id = :intentId
+            """)
+    Long countQaPairsByIntentId(@Param("intentId") Integer intentId);
+
+    @Query("""
+            SELECT COUNT(qi)
+            FROM qaIntentEntity qi
+            WHERE qi.qaPair.id = :qaId
+            """)
+    Long countIntentsByQaId(@Param("qaId") Integer qaId);
 }
