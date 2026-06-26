@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "qaEmbeddingEntity")
 @Table(name = "qa_embeddings")
 public class QaEmbedding {
 
@@ -33,7 +33,8 @@ public class QaEmbedding {
     @Column(name = "model_name", nullable = false)
     private String modelName;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+//    @CreatedDate
+//    @Column(name = "created_at", updatable = false)
+//    private LocalDateTime createdAt;
 }
+
