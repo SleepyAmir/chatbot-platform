@@ -40,3 +40,4 @@ public class QaPair {
 //    private LocalDateTime created_at;
 }
 
+
