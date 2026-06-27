@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "qaIntentEntity")
 @Table(name = "qa_intents")
 @IdClass(QaIntentId.class)
 public class QaIntent {

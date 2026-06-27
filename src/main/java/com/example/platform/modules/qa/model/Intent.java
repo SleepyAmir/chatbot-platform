@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "intentEntity")
 @Table(name = "intents")
 public class Intent {
     @Id
@@ -24,9 +24,9 @@ public class Intent {
     @Column(name = "name", nullable = false, unique = true, columnDefinition = "TEXT")
     private String name;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+//    @CreatedDate
+//    @Column(name = "created_at", updatable = false)
+//    private LocalDateTime createdAt;
 
 }
 

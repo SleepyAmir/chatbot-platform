@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
+@Entity(name = "qa_pairEntity")
 @Table(name = "qa_pairs")
 public class QaPair {
 
@@ -35,8 +35,9 @@ public class QaPair {
     @JoinColumn(name = "course_id", nullable = true)
     private Course course;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime created_at;
+//    @CreatedDate
+//    @Column(name = "created_at", updatable = false)
+//    private LocalDateTime created_at;
 }
+
 
