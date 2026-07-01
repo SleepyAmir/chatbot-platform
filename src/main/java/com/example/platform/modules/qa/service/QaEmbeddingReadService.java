@@ -6,7 +6,14 @@ import java.util.List;
 
 
 /**
- * Read operations for QaEmbedding module.
+ * Defines read-only operations for QA embedding metadata.
+ * Covers listing, lookup by id, lookup by QA id, filtering, and counts.
+ *
+ * <p>Implemented by the embedding read service layer.
+ * Module: QA/Embedding | Phase 1: Read only | DTO: QaEmbeddingResponse</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.dto.response.QaEmbeddingResponse
  */
 public interface QaEmbeddingReadService {
 

@@ -6,7 +6,14 @@ import com.example.platform.modules.qa.dto.response.QaPairResponse;
 import java.util.List;
 
 /**
- * Read operations for QaIntent module.
+ * Defines read-only operations for QA-intent relationships.
+ * Covers relationship listing, reverse lookups, existence checks, and counts.
+ *
+ * <p>Implemented by the QA-intent read service layer.
+ * Module: QA/Intent relation | Phase 1: Read only | DTO: QaIntentResponse</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.dto.response.QaIntentResponse
  */
 public interface QaIntentReadService {
 
