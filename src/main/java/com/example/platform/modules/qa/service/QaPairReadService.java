@@ -3,7 +3,6 @@ package com.example.platform.modules.qa.service;
 import com.example.platform.modules.qa.dto.response.IntentResponse;
 import com.example.platform.modules.qa.dto.response.QaPairDetailResponse;
 import com.example.platform.modules.qa.dto.response.QaPairResponse;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -60,5 +59,5 @@ public interface QaPairReadService {
      */
     boolean existsByQuestion(String question);
 
-    public List<IntentResponse> getIntentsByQaId(Integer qaId);
+    List<IntentResponse> getIntentsByQaId(Integer qaId);
 }
