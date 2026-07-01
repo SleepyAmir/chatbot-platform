@@ -12,6 +12,16 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
+/**
+ * Maps QA pair entities to basic and detailed response DTOs.
+ * Adds course summary and externally prepared related data to responses.
+ *
+ * <p>Used by QaPairReadService for list and detail views.
+ * Entity: QaPair | DTOs: QaPairResponse, QaPairDetailResponse | Tool: MapStruct</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.model.QaPair
+ */
 @Mapper(
         componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -19,12 +29,21 @@ import java.util.List;
 )
 public interface QaPairMapper {
 
+    /**
+     * Convert QA pair to basic response with course summary.
+     */
     @Mapping(target = "courseId", source = "course.id")
     @Mapping(target = "courseName", source = "course.name")
     QaPairResponse toResponse(QaPair qaPair);
 
+    /**
+     * Convert QA pair list to basic response DTO list.
+     */
     List<QaPairResponse> toResponses(List<QaPair> qaPairs);
 
+    /**
+     * Build detail response from QA pair plus extra related data.
+     */
     @Mapping(target = "id", source = "qaPair.id")
     @Mapping(target = "question", source = "qaPair.question")
     @Mapping(target = "answer", source = "qaPair.answer")

@@ -5,7 +5,14 @@ import com.example.platform.modules.qa.dto.response.IntentResponse;
 import java.util.List;
 
 /**
- * Read operations for Intent module.
+ * Defines read-only operations for intent resources.
+ * Covers listing, lookup, search, count, and existence checks.
+ *
+ * <p>Implemented by the intent read service layer.
+ * Module: QA/Intent | Phase 1: Read only | DTO: IntentResponse</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.dto.response.IntentResponse
  */
 public interface IntentReadService {
 

@@ -8,8 +8,21 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Provides database access methods for QA pairs.
+ * Contains list, lookup, keyword search, and filter queries.
+ *
+ * <p>Used by QaPairReadService as the main QA persistence layer.
+ * DB: qa_pairs | Phase 1: Read/Search only | Base: JpaRepository</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.service.QaPairReadService
+ */
 public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
 
+    /**
+     * Load all QA pairs with optional course data.
+     */
     @Query("""
             SELECT q
             FROM qa_pairEntity q
@@ -17,6 +30,9 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             """)
     List<QaPair> findAllWithCourse();
 
+    /**
+     * Find one QA pair by id with course data.
+     */
     @Query("""
             SELECT q
             FROM qa_pairEntity q
@@ -27,6 +43,9 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             @Param("id") Integer id
     );
 
+    /**
+     * Find QA pairs that belong to a course.
+     */
     @Query("""
             SELECT q
             FROM qa_pairEntity q
@@ -37,6 +56,9 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             @Param("courseId") Integer courseId
     );
 
+    /**
+     * Search question, answer, and course name by keyword.
+     */
     @Query("""
             SELECT q
             FROM qa_pairEntity q
@@ -52,6 +74,9 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             @Param("keyword") String keyword
     );
 
+    /**
+     * Find QA pairs connected to an intent name.
+     */
     @Query("""
             SELECT DISTINCT q
             FROM qaIntentEntity qi
@@ -64,6 +89,9 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             @Param("intentName") String intentName
     );
 
+    /**
+     * Check duplicate questions, ignoring case.
+     */
     @Query("""
             SELECT CASE WHEN COUNT(q) > 0 THEN true ELSE false END
             FROM qa_pairEntity q
