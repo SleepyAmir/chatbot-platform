@@ -1,13 +1,12 @@
 package com.example.platform.modules.chatlog.service;
 
-import com.example.platform.modules.chatlog.dto.request.FeedbackRequest;
-import com.example.platform.modules.chatlog.dto.response.FeedbackResponse;
-
-import java.util.List;
+import com.example.platform.modules.chatlog.dto.FeedbackRequest;
+import com.example.platform.modules.chatlog.model.Feedback;
 
 public interface FeedbackService {
 
-    FeedbackResponse submitFeedback(FeedbackRequest request);
+    Feedback submitFeedback(
+            FeedbackRequest request
+    );
 
-    List<FeedbackResponse> getFeedbackForLog(Integer logId);
 }
