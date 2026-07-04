@@ -8,8 +8,21 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+/**
+ * Provides database access methods for QA-intent relationships.
+ * Contains read, count, and existence queries for the join table.
+ *
+ * <p>Used by QaIntentReadService and QA detail building.
+ * DB: qa_intents | Phase 1: Read only | Base: JpaRepository</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.service.QaIntentReadService
+ */
 public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> {
 
+    /**
+     * Load all QA-intent links with both sides fetched.
+     */
     @Query("""
             SELECT qi
             FROM qaIntentEntity qi
@@ -18,6 +31,9 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             """)
     List<QaIntent> findAllWithQaPairAndIntent();
 
+    /**
+     * Find all intent links for one QA pair.
+     */
     @Query("""
             SELECT qi
             FROM qaIntentEntity qi
@@ -29,6 +45,9 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             @Param("qaId") Integer qaId
     );
 
+    /**
+     * Find all QA links for one intent.
+     */
     @Query("""
             SELECT qi
             FROM qaIntentEntity qi
@@ -40,6 +59,9 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             @Param("intentId") Integer intentId
     );
 
+    /**
+     * Check whether a QA pair is linked to an intent.
+     */
     @Query("""
             SELECT CASE WHEN COUNT(qi) > 0 THEN true ELSE false END
             FROM qaIntentEntity qi
@@ -51,6 +73,9 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             @Param("intentId") Integer intentId
     );
 
+    /**
+     * Count QA pairs assigned to one intent.
+     */
     @Query("""
             SELECT COUNT(qi)
             FROM qaIntentEntity qi
@@ -58,6 +83,9 @@ public interface QaIntentRepository extends JpaRepository<QaIntent, QaIntentId> 
             """)
     Long countQaPairsByIntentId(@Param("intentId") Integer intentId);
 
+    /**
+     * Count intents assigned to one QA pair.
+     */
     @Query("""
             SELECT COUNT(qi)
             FROM qaIntentEntity qi

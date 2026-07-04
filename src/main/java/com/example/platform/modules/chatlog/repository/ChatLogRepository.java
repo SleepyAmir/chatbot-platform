@@ -1,22 +1,14 @@
 package com.example.platform.modules.chatlog.repository;
 
-import com.example.platform.modules.chatlog.entity.ChatLog;
-
-import org.springframework.data.domain.*;
-
+import com.example.platform.modules.chatlog.model.ChatLog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface ChatLogRepository
-        extends JpaRepository<ChatLog,Long>{
+        extends JpaRepository<ChatLog, Long> {
 
-    List<ChatLog> findBySessionId(
-            String sessionId
-    );
-
-    Page<ChatLog>
-    findAllByOrderByCreatedAtDesc(
+    Page<ChatLog> findAllByOrderByCreatedAtDesc(
             Pageable pageable
     );
 

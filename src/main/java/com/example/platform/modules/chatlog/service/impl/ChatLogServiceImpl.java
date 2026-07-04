@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 
 public class ChatLogServiceImpl implements ChatLogService {
+public class ChatLogServiceImpl
+        implements ChatLogService {
 
     private final ChatLogRepository repository;
 
@@ -51,6 +53,21 @@ return repository.save(log);
         //injaro nafar-e 4 bayad ezafe kone, ba'd az inke repository.save() aslan kar kard:
         // frequentQueryService.trackQuery(dto.getUserQuestion());
         return null;
+            ChatLogRequest request
+    ) {
+
+        ChatLog log = ChatLog.builder()
+                .sessionId(request.getSessionId())
+                .userQuestion(request.getUserQuestion())
+                .matchedQa(request.getMatchedQa())
+                .answerReturned(request.getAnswerReturned())
+                .confidence(request.getConfidence())
+                .modelUsed(request.getModelUsed())
+                .responseTimeMs(request.getResponseTimeMs())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return repository.save(log);
 
     }
 
@@ -69,6 +86,16 @@ return repository.save(log);
 
                 );
         return null;
+    public ChatLog getLogById(
+            Long id
+    ) {
+
+        return repository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                "ChatLog not found"
+                        )
+                );
 
     }
 
@@ -87,6 +114,13 @@ return repository.save(log);
 
                 );
         return null;
+    public Page<ChatLog> getRecentLogs(
+            Pageable pageable
+    ) {
+
+        return repository.findAllByOrderByCreatedAtDesc(
+                pageable
+        );
 
     }
 

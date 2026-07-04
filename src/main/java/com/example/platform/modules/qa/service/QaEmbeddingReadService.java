@@ -1,14 +1,19 @@
 package com.example.platform.modules.qa.service;
 
 import com.example.platform.modules.qa.dto.response.QaEmbeddingResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
+
 
 /**
- * Read operations for QaEmbedding module.
+ * Defines read-only operations for QA embedding metadata.
+ * Covers listing, lookup by id, lookup by QA id, filtering, and counts.
+ *
+ * <p>Implemented by the embedding read service layer.
+ * Module: QA/Embedding | Phase 1: Read only | DTO: QaEmbeddingResponse</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.dto.response.QaEmbeddingResponse
  */
 public interface QaEmbeddingReadService {
 

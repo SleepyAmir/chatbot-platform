@@ -3,12 +3,18 @@ package com.example.platform.modules.qa.service;
 import com.example.platform.modules.qa.dto.response.IntentResponse;
 import com.example.platform.modules.qa.dto.response.QaPairDetailResponse;
 import com.example.platform.modules.qa.dto.response.QaPairResponse;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 /**
- * Read operations for QaPair module.
+ * Defines read-only operations for QA pair resources.
+ * Covers list, detail, keyword search, filtering, count, and existence checks.
+ *
+ * <p>Implemented by the QA pair read service layer.
+ * Module: QA Pair | Phase 1: Read/Search only | DTO: QaPairResponse</p>
+ *
+ * @author Mobina
+ * @see com.example.platform.modules.qa.dto.response.QaPairResponse
  */
 public interface QaPairReadService {
 
@@ -60,5 +66,8 @@ public interface QaPairReadService {
      */
     boolean existsByQuestion(String question);
 
-    public List<IntentResponse> getIntentsByQaId(Integer qaId);
+    /**
+     * Get intents assigned to a specific QA pair.
+     */
+    List<IntentResponse> getIntentsByQaId(Integer qaId);
 }
