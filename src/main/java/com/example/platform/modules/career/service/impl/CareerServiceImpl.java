@@ -9,13 +9,15 @@ import com.example.platform.modules.career.repository.CareerRepository;
 import com.example.platform.modules.career.service.CareerService;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+//
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -41,12 +43,14 @@ public class CareerServiceImpl implements CareerService {
     }
 
     @Override
+    @Cacheable(cacheNames = "careers", key = "#id")
     public CareerResponse getCareerById(Integer id) {
         return careerMapper.toResponse(getRequiredCareerEntity(id));
     }
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "careers", allEntries = true)
     public CareerResponse createCareer(CareerRequest request) {
         validateCareerTitleIsUnique(request.title());
         Career savedCareer = careerRepository.saveAndFlush(careerMapper.toEntity(request));
@@ -56,6 +60,7 @@ public class CareerServiceImpl implements CareerService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "careers", allEntries = true)
     public CareerResponse updateCareer(Integer id, CareerRequest request) {
         Career career = getRequiredCareerEntity(id);
         validateCareerTitleIsUniqueForUpdate(request.title(), id);
@@ -65,6 +70,7 @@ public class CareerServiceImpl implements CareerService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "careers", allEntries = true)
     public void deleteCareer(Integer id) {
         careerRepository.delete(getRequiredCareerEntity(id));
     }

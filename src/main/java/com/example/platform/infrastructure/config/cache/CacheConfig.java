@@ -1,14 +1,17 @@
 package com.example.platform.infrastructure.config.cache;
 
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.*;
-
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
@@ -16,34 +19,32 @@ import java.util.Map;
 public class CacheConfig {
 //
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory factory) {
+    public RedisCacheManager cacheManager(
+            RedisConnectionFactory connectionFactory,
+            RedisSerializer<Object> redisJsonSerializer
+    ) {
+        RedisCacheConfiguration defaultConfig = baseConfig(redisJsonSerializer, Duration.ofMinutes(30));
 
-        RedisCacheConfiguration defaultConfig =
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .entryTtl(Duration.ofMinutes(15));
+        Map<String, RedisCacheConfiguration> perCacheConfigs = new HashMap<>();
+        perCacheConfigs.put("courses", baseConfig(redisJsonSerializer, Duration.ofMinutes(10)));
+        perCacheConfigs.put("careers", baseConfig(redisJsonSerializer, Duration.ofMinutes(10)));
+        perCacheConfigs.put("qa-search", baseConfig(redisJsonSerializer, Duration.ofMinutes(5)));
 
-        Map<String, RedisCacheConfiguration> cacheConfigs =
-                Map.of(
-
-                        "courses",
-                        defaultConfig.entryTtl(
-                                Duration.ofMinutes(10)
-                        ),
-
-                        "careers",
-                        defaultConfig.entryTtl(
-                                Duration.ofMinutes(10)
-                        ),
-
-                        "qa-search",
-                        defaultConfig.entryTtl(
-                                Duration.ofMinutes(5)
-                        )
-                );
-
-        return RedisCacheManager.builder(factory)
+        return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
-                .withInitialCacheConfigurations(cacheConfigs)
+                .withInitialCacheConfigurations(perCacheConfigs)
                 .build();
+    }
+
+    private RedisCacheConfiguration baseConfig(RedisSerializer<Object> valueSerializer, Duration ttl) {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(ttl)
+                .disableCachingNullValues()
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())
+                )
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer)
+                );
     }
 }

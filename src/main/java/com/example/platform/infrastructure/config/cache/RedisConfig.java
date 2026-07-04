@@ -1,42 +1,46 @@
 package com.example.platform.infrastructure.config.cache;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.*;
+import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
 //
 @Configuration
 public class RedisConfig {
 
     @Bean
-    public RedisTemplate<String,String> redisTemplate(
-            RedisConnectionFactory connectionFactory) {
+    public RedisSerializer<Object> redisJsonSerializer() {
 
-        RedisTemplate<String,String> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        PolymorphicTypeValidator validator = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.example.platform")
+                .build();
 
-        StringRedisSerializer serializer = new StringRedisSerializer();
-
-        template.setKeySerializer(serializer);
-        template.setValueSerializer(serializer);
-        template.setHashKeySerializer(serializer);
-        template.setHashValueSerializer(serializer );
-
-        template.afterPropertiesSet();
-
-        return template;
+        return GenericJacksonJsonRedisSerializer.builder()
+                .enableUnsafeDefaultTyping()
+                .build();
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        return mapper;
+    public RedisTemplate<String, Object> redisTemplate(
+            RedisConnectionFactory connectionFactory,
+            RedisSerializer<Object> redisJsonSerializer
+    ) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+        template.setKeySerializer(keySerializer);
+        template.setHashKeySerializer(keySerializer);
+
+        template.setValueSerializer(redisJsonSerializer);
+        template.setHashValueSerializer(redisJsonSerializer);
+
+        template.afterPropertiesSet();
+        return template;
     }
 }
-
