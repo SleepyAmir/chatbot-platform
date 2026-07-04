@@ -1,80 +1,93 @@
 package com.example.platform.modules.chatlog.service.impl;
 
+import com.example.platform.common.exception.ResourceNotFoundException;
+import com.example.platform.modules.chatlog.dto.ChatLogRequest;
+import com.example.platform.modules.chatlog.model.ChatLog;
+import com.example.platform.modules.chatlog.repository.ChatLogRepository;
 import com.example.platform.modules.chatlog.service.ChatLogService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 
-public class ChatLogServiceImpl
-implements ChatLogService {
+public class ChatLogServiceImpl implements ChatLogService {
 
-private final ChatLogRepository repository;
+    private final ChatLogRepository repository;
 
-@Override
-public ChatLog saveLog(
-ChatLogRequest dto
-){
+    @Override
+    public ChatLog saveLog(
+            ChatLogRequest dto
+    ) {
 
-ChatLog log=
+        ChatLog log =
 
-ChatLog.builder()
+                ChatLog.builder()
 
-.sessionId(dto.getSessionId())
+                        .sessionId(dto.getSessionId())
 
-.userQuestion(dto.getUserQuestion())
+                        .userQuestion(dto.getUserQuestion())
 
-.matchedQa(dto.getMatchedQa())
+                        .matchedQa(dto.getMatchedQa())
 
-.answerReturned(dto.getAnswerReturned())
+                        .answerReturned(dto.getAnswerReturned())
 
-.confidence(dto.getConfidence())
+                        .confidence(dto.getConfidence())
 
-.modelUsed(dto.getModelUsed())
+                        .modelUsed(dto.getModelUsed())
 
-.responseTimeMs(dto.getResponseTimeMs())
+                        .responseTimeMs(dto.getResponseTimeMs())
 
-.createdAt(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now())
 
-.build();
+                        .build();
 
 return repository.save(log);
 
-}
+        //injaro nafar-e 4 bayad ezafe kone, ba'd az inke repository.save() aslan kar kard:
+        // frequentQueryService.trackQuery(dto.getUserQuestion());
+        return null;
 
-@Override
-public ChatLog getLogById(Long id){
+    }
 
-return repository.findById(id)
+    @Override
+    public ChatLog getLogById(Long id) {
 
-.orElseThrow(
+        return repository.findById(id)
 
-()->new ResourceNotFoundException(
+                .orElseThrow(
 
-"ChatLog not found"
+                        () -> new ResourceNotFoundException(
 
-)
+                                "ChatLog not found"
 
-);
+                        )
 
-}
+                );
+        return null;
 
-@Override
-public Page<ChatLog>
+    }
 
-getRecentLogs(
+    @Override
+    public Page<ChatLog>
 
-Pageable pageable
+    getRecentLogs(
 
-){
+            Pageable pageable
 
-return repository
+    ) {
 
-.findAllByOrderByCreatedAtDesc(
+        return repository
 
-pageable
+                .findAllByOrderByCreatedAtDesc(pageable
 
-);
+                );
+        return null;
 
-}
+    }
 
 }

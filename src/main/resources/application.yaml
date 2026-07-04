@@ -3,7 +3,7 @@ spring:
     name: platform
 
   datasource:
-      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5440}/${DB_NAME:platform_db}
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:platform_db}
       username: ${DB_USERNAME:platform_user}
       password: ${DB_PASSWORD:platform123}
       driver-class-name: org.postgresql.Driver
@@ -39,6 +39,10 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 15MB
+
+semantic:
+  cache:
+    ttl-minutes: 5
 
 server:
   port: ${SERVER_PORT:8081}

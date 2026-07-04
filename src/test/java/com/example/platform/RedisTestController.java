@@ -12,7 +12,7 @@ public class RedisTestController {
     private final RedisTestService service;
 
     @GetMapping("/test/redis")
-    public String run() throws Exception {
+    public String run() {
 
         service.runTest();
          return "Redis Test Finished!";

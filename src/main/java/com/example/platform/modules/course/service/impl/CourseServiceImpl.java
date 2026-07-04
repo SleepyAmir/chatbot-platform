@@ -8,6 +8,8 @@ import com.example.platform.modules.course.mapper.CourseMapper;
 import com.example.platform.modules.course.repository.CourseRepository;
 import com.example.platform.modules.course.service.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Cacheable(cacheNames = "courses", key = "#id")
     public CourseResponse getCourseById(Integer id) {
         return courseMapper.toResponse(getRequiredCourseEntity(id));
     }
@@ -60,6 +63,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "courses", allEntries = true)
     public CourseResponse createCourse(CourseRequest request) {
         validateCourseNameIsUnique(request.name());
         Course course = courseMapper.toEntity(request);
@@ -69,6 +73,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "courses", allEntries = true)
     public CourseResponse updateCourse(Integer id, CourseRequest request) {
         Course course = getRequiredCourseEntity(id);
 
@@ -83,6 +88,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "courses",  allEntries = true)
     public void deleteCourse(Integer id) {
         Course course = getRequiredCourseEntity(id);
         courseRepository.delete(course);

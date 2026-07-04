@@ -1,12 +1,11 @@
-package com.example.platform.modules.cache;
+package com.example.platform.modules.cache.dto;
 
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-//
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -21,7 +20,7 @@ public class CachedQA {
 
     private String answer;
 
-    private List<Double> embedding;
+    private List<Float> embedding;
 
     private LocalDateTime createdAt;
 
