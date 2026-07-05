@@ -1,0 +1,144 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Thin.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-ExtraLight.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-ExtraLight.woff') format('woff');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Light.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Regular.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Medium.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-SemiBold.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Bold.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-ExtraBold.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-ExtraBold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Peyda';
+  src:
+    url('/fonts/payda/woff2/PeydaWebFaNum-Black.woff2') format('woff2'),
+    url('/fonts/payda/woff/PeydaWebFaNum-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-page: #f7f8fb;
+  --color-surface: #ffffff;
+  --color-surface-strong: #eef2f7;
+  --color-text: #142033;
+  --color-muted: #6b778c;
+  --color-border: #e4e9f1;
+  --color-primary: #4f76d9;
+  --color-primary-soft: rgb(79 118 217 / 22%);
+  --color-accent: #9b155f;
+  --color-success: #13a89e;
+  --color-warning: #f1b94a;
+  --shadow-card: 0 24px 70px rgb(40 54 89 / 12%);
+  font-family: 'Peyda', Tahoma, Arial, sans-serif;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --color-page: #08111f;
+  --color-surface: #101c2f;
+  --color-surface-strong: #182844;
+  --color-text: #edf4ff;
+  --color-muted: #9babc4;
+  --color-border: rgb(255 255 255 / 10%);
+  --color-primary: #79a7ff;
+  --color-primary-soft: rgb(121 167 255 / 24%);
+  --color-accent: #f06aad;
+  --color-success: #2dd4bf;
+  --color-warning: #f8d77a;
+  --shadow-card: 0 28px 80px rgb(0 0 0 / 32%);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at top left, color-mix(in oklab, var(--color-primary) 20%, transparent), transparent 34rem),
+    radial-gradient(circle at bottom right, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 28rem),
+    var(--color-page);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
