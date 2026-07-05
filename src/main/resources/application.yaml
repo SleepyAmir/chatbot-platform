@@ -2,11 +2,17 @@ spring:
   application:
     name: platform
 
+  profiles:
+    # local  -> Fake* clients (FakeIntentClient/FakeLLMClient/FakeRerankClient/FakeEmbeddingClient),
+    #           no external Python services or OpenAI key needed, app runs standalone.
+    # prod   -> Real* clients, calls the actual intent/llm/rerank/embedding services below.
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
   datasource:
-      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:platform_db}
-      username: ${DB_USERNAME:platform_user}
-      password: ${DB_PASSWORD:platform123}
-      driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:platform_db}
+    username: ${DB_USERNAME:platform_user}
+    password: ${DB_PASSWORD:platform123}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -18,14 +24,17 @@ spring:
     locations: classpath:db/migration
     validate-on-migrate: true
 
-
-  mongodb:
-    host: ${MONGO_HOST:localhost}
-    port: ${MONGO_PORT:27017}
-    database: ${MONGO_DB:platform_mongo}
-    auto-index-creation: true
-
   data:
+    # NOTE: this used to be top-level "mongodb:" under spring (i.e. "spring.mongodb.*"),
+    # which is not a real Spring Boot property path (it's "spring.data.mongodb.*"
+    # since Spring Boot 2.3+), so MONGO_HOST/MONGO_PORT/MONGO_DB were silently
+    # ignored and Mongo always connected to localhost:27017 regardless of env vars.
+    mongodb:
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      database: ${MONGO_DB:platform_mongo}
+      auto-index-creation: true
+
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
@@ -43,6 +52,9 @@ spring:
 semantic:
   cache:
     ttl-minutes: 5
+    # cosine similarity a cached question must reach to count as "the same
+    # question" for SemanticCacheService.find() - see OrchestratorService.
+    similarity-threshold: ${SEMANTIC_CACHE_SIMILARITY_THRESHOLD:0.92}
 
 server:
   port: ${SERVER_PORT:8081}
@@ -62,6 +74,42 @@ springdoc:
     path: /v3/api-docs
     enabled: true
 
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  embedding:
+    model: text-embedding-3-small
+  base-url: https://api.openai.com/v1
+
+embedding:
+  # Must stay in sync with the vector(384) column in qa_embeddings; both
+  # FakeEmbeddingClient and OpenAiEmbeddingClient read this same value so the
+  # two environments never drift apart.
+  dimensions: ${EMBEDDING_DIMENSIONS:384}
+
+# Base URLs for the Python microservices (only used by the Real* clients,
+# i.e. when spring.profiles.active=prod). Under the local/dev profile the
+# Fake* clients are used instead and these are never called.
+clients:
+  intent:
+    base-url: ${INTENT_SERVICE_URL:http://intent-service}
+  llm:
+    base-url: ${LLM_SERVICE_URL:http://llm-service}
+  rerank:
+    base-url: ${RERANK_SERVICE_URL:http://rerank-service}
+
+# Tuning for the qa_pairs RAG pipeline (QaSearchService): embed -> search_qa
+# (pgvector ANN, filtered at min-vector-similarity) -> rerank -> accept only
+# if the best rerank score clears min-rerank-score, else fall through to the LLM.
+qa:
+  search:
+    top-k: ${QA_SEARCH_TOP_K:10}
+    min-vector-similarity: ${QA_SEARCH_MIN_VECTOR_SIMILARITY:0.55}
+    min-rerank-score: ${QA_SEARCH_MIN_RERANK_SCORE:0.78}
+
 logging:
   level:
     com.example.platform: DEBUG
+  pattern:
+    # %X{traceId} is the id OrchestratorService.chat() puts in MDC, so every
+    # log line for one request (across every class) can be grepped together.
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [traceId=%X{traceId:-no-trace}] %logger{36} - %msg%n"
