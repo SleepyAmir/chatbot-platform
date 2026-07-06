@@ -52,6 +52,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SKIP_FRONTEND_BUILD: "false"
     container_name: platform-app
     ports:
       - "8080:8080"

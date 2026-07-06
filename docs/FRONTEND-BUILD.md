@@ -89,10 +89,12 @@ APIها همچنان از `/api/**` سرو می‌شوند.
 |------|------|-----|
 | `/` | داشبورد | — |
 | `/courses` | دوره‌ها | `/api/courses` |
+| `/courses/:id` | جزئیات دوره | `/api/courses/{id}`, `/details`, QA و careers |
 | `/careers` | مشاغل (Career Module) | `/api/careers` |
-| `/careers/:id` | جزئیات شغل | `/api/careers/{id}` |
-| `/chat` | چت | `/api/chatlog` |
-| `/ocr` | OCR | `/api/ocr` |
+| `/careers/:id` | جزئیات شغل + CRUD مهارت/نیازمندی/لینک دوره | `/api/careers/{id}/*` |
+| `/faq` | مرور FAQ | `/api/qa`, `/api/intents` |
+| `/chat` | دستیار آموزشی | `POST /api/chat` |
+| `/ocr` | OCR (غیرفعال) | — |
 
 > **نکته:** ماژول Career باید روی بک‌اند فعال باشد (برنچ `feature/career-module` یا master به‌روز).
 

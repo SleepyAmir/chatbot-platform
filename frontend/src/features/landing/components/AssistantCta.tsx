@@ -1,4 +1,5 @@
 import { Bot, MessagesSquare } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function AssistantCta() {
   return (
@@ -14,9 +15,15 @@ export function AssistantCta() {
             کاربر سوال می‌پرسد، پلتفرم دوره و مسیر شغلی مناسب را پیشنهاد می‌دهد
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-8 text-[var(--color-muted)]">
-            این بخش برای اتصال pipeline چت، جستجوی برداری، rerank و ذخیره history آماده شده
-            و در فاز بعدی به endpoint اصلی `/api/chat` وصل می‌شود.
+            اتصال مستقیم به <code className="text-xs">POST /api/chat</code> — پاسخ از cache، QA pairs یا course lookup.
           </p>
+          <Link
+            to="/chat"
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[var(--color-primary-soft)]"
+          >
+            <Bot size={18} />
+            شروع گفتگو
+          </Link>
         </div>
         <div className="rounded-[2rem] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
           <div className="flex items-center gap-3">

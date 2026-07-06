@@ -9,8 +9,10 @@ public class FrontendController {
     @GetMapping({
             "/",
             "/courses",
+            "/courses/{id:[0-9]+}",
             "/careers",
             "/careers/{id:[0-9]+}",
+            "/faq",
             "/ocr",
             "/chat"
     })

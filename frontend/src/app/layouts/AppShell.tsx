@@ -2,7 +2,7 @@ import { Menu, Search, UserRound, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { mainNavigation } from '../../shared/lib/navigation';
-import { ThemeToggle } from '../../shared/ui/ThemeToggle';
+import { BrandLogo, ThemeToggle } from '../../shared/ui';
 
 export function AppShell() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,13 +30,7 @@ export function AppShell() {
       <header className="sticky top-0 z-40 border-b border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-page)_88%,transparent)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:py-4 lg:px-8">
           <NavLink to="/" className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[var(--color-primary)] text-lg font-black text-white shadow-lg shadow-[var(--color-primary-soft)] sm:h-12 sm:w-12 sm:rounded-3xl">
-              م
-            </div>
-            <div>
-              <p className="text-sm font-black">مجتمع فنی تهران</p>
-              <p className="hidden text-xs text-[var(--color-muted)] sm:block">MFTPlus Chatbot Platform</p>
-            </div>
+            <BrandLogo />
           </NavLink>
 
           <nav className="hidden items-center gap-1 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] p-1 shadow-sm lg:flex">
@@ -107,13 +101,7 @@ export function AppShell() {
       >
         <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] pb-4">
           <div className="flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[var(--color-primary)] font-black text-white">
-              م
-            </div>
-            <div>
-              <p className="text-sm font-black">مجتمع فنی تهران</p>
-              <p className="text-xs text-[var(--color-muted)]">منوی سامانه</p>
-            </div>
+            <BrandLogo subtitle="منوی سامانه" alwaysShowSubtitle />
           </div>
           <button
             type="button"

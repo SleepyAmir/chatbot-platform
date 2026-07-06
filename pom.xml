@@ -23,6 +23,7 @@
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<node.version>v20.19.0</node.version>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+		<skip.frontend>false</skip.frontend>
 	</properties>
 
 	<dependencyManagement>
@@ -198,6 +199,7 @@
 				<artifactId>frontend-maven-plugin</artifactId>
 				<version>${frontend-maven-plugin.version}</version>
 				<configuration>
+					<skip>${skip.frontend}</skip>
 					<workingDirectory>frontend</workingDirectory>
 					<installDirectory>${project.build.directory}</installDirectory>
 				</configuration>

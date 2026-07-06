@@ -1,54 +1,36 @@
-import { ChangeEvent, useState } from 'react';
-import { uploadOcrImage } from '../api/ocr.api';
-import { StateBlock } from '../shared/ui';
+import { AlertCircle, Bot } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function OcrPage() {
-  const [text, setText] = useState('');
-  const [imageId, setImageId] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
-    setLoading(true);
-    uploadOcrImage(file)
-      .then((result) => {
-        setImageId(result.id);
-        setText(result.extractedText);
-        setError(null);
-      })
-      .catch((err: Error) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
-
   return (
     <div className="space-y-5">
       <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
-        <h3 className="text-xl font-bold">OCR تصویر</h3>
-        <p className="mt-2 text-sm text-[var(--color-muted)]">ارسال تصویر به `/api/v1/ocr/upload` و نمایش متن استخراج‌شده</p>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFile}
-          className="mt-5 block w-full rounded-2xl border border-dashed border-[var(--color-border)] bg-[var(--color-page)] p-4 text-sm text-[var(--color-muted)]"
-        />
+        <div className="flex items-start gap-4">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color-mix(in_oklab,var(--color-warning)_18%,transparent)] text-[var(--color-warning)]">
+            <AlertCircle size={24} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">استعلام مدارک (OCR)</h3>
+            <p className="mt-2 text-sm leading-8 text-[var(--color-muted)]">
+              endpoint اختصاصی OCR فعلاً فعال نیست. طبق API Contract، تصمیم معماری OCR هنوز نهایی نشده.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {loading ? <StateBlock title="در حال استخراج متن..." /> : null}
-      {error ? <StateBlock title="خطا در OCR" description={error} /> : null}
-
-      {text ? (
-        <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
-          <span className="text-xs font-bold text-[var(--color-primary)]">Document: {imageId}</span>
-          <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-[var(--color-page)] p-4 text-sm leading-7 text-[var(--color-text)]">
-            {text}
-          </pre>
-        </section>
-      ) : null}
+      <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-sm">
+        <h4 className="font-bold">جایگزین موقت</h4>
+        <p className="mt-2 text-sm leading-8 text-[var(--color-muted)]">
+          می‌توانی از دستیار آموزشی فایل ضمیمه کنی — بک‌اند فعلاً فایل را دریافت می‌کند ولی پردازش OCR انجام نمی‌دهد.
+        </p>
+        <Link
+          to="/chat"
+          className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[var(--color-primary-soft)]"
+        >
+          <Bot size={18} />
+          رفتن به دستیار آموزشی
+        </Link>
+      </section>
     </div>
   );
 }
