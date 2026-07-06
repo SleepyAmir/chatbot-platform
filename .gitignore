@@ -23,6 +23,7 @@ target/
 /nbproject/private/
 /nbbuild/
 /dist/
+/diagram/
 /nbdist/
 /.nb-gradle/
 build/
@@ -32,3 +33,15 @@ build/
 ### VS Code ###
 .vscode/
 .env
+
+### frontend ###
+/frontend/node_modules/
+/frontend/dist/
+/frontend/build/
+/frontend/.vite/
+/frontend/.cache/
+/frontend/coverage/
+/frontend/*.tsbuildinfo
+/frontend/.env
+/frontend/.env.*
+!/frontend/.env.example
