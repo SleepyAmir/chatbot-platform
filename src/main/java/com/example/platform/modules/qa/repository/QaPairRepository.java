@@ -1,5 +1,6 @@
 package com.example.platform.modules.qa.repository;
 
+import com.example.platform.modules.qa.dto.QaSearchRow;
 import com.example.platform.modules.qa.model.QaPair;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -99,5 +100,37 @@ public interface QaPairRepository extends JpaRepository<QaPair, Integer> {
             """)
     boolean existsByQuestionIgnoreCase(
             @Param("question") String question
+    );
+
+    /**
+     * Calls the search_qa(...) pgvector function defined in V2__qa_intent_embedding.sql.
+     * embeddingLiteral must be built via PgVectorUtils.toVectorLiteral(...)
+     * (e.g. "[0.12,0.98,...]").
+     *
+     * <p>Used by QaSearchService as the vector-search stage of the RAG pipeline
+     * (embed -> search_qa -> rerank -> accept/reject).</p>
+     *
+     * Column aliases are written explicitly (qa_id AS qaId etc.) because native
+     * query projections in Spring Data rely on an exact alias-to-getter match.
+     */
+    @Query(value = """
+            SELECT
+                qa_id       AS qaId,
+                question    AS question,
+                answer      AS answer,
+                course_id   AS courseId,
+                similarity  AS similarity,
+                model_name  AS modelName,
+                created_at  AS createdAt
+            FROM search_qa(
+                CAST(:embedding AS vector(384)),
+                :topK,
+                :minSimilarity
+            )
+            """, nativeQuery = true)
+    List<QaSearchRow> searchQa(
+            @Param("embedding") String embeddingLiteral,
+            @Param("topK") int topK,
+            @Param("minSimilarity") double minSimilarity
     );
 }
