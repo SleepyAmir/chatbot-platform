@@ -25,15 +25,19 @@ spring:
     validate-on-migrate: true
     encoding: UTF-8
 
+  # Spring Boot 4 split MongoDB config into two prefixes:
+  #   spring.mongodb.*      -> low-level driver connection settings (host/port/database/credentials)
+  #   spring.data.mongodb.* -> Spring Data mapping-layer settings only (auto-index-creation, etc.)
+  # Putting host/port/database under spring.data.mongodb (the Spring Boot 3 location) means
+  # they're silently ignored here - MongoProperties falls back to its own default (localhost:27017)
+  # regardless of MONGO_HOST/MONGO_PORT/MONGO_DB, even though those env vars are set correctly.
+  mongodb:
+    host: ${MONGO_HOST:localhost}
+    port: ${MONGO_PORT:27017}
+    database: ${MONGO_DB:platform_mongo}
+
   data:
-    # NOTE: this used to be top-level "mongodb:" under spring (i.e. "spring.mongodb.*"),
-    # which is not a real Spring Boot property path (it's "spring.data.mongodb.*"
-    # since Spring Boot 2.3+), so MONGO_HOST/MONGO_PORT/MONGO_DB were silently
-    # ignored and Mongo always connected to localhost:27017 regardless of env vars.
     mongodb:
-      host: ${MONGO_HOST:localhost}
-      port: ${MONGO_PORT:27017}
-      database: ${MONGO_DB:platform_mongo}
       auto-index-creation: true
 
     redis:
