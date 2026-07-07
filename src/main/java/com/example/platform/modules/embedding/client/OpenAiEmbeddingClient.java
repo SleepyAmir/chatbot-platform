@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-@Profile("prod")
+@Profile("openai")
 @RequiredArgsConstructor
 public class OpenAiEmbeddingClient implements EmbeddingClient {
 

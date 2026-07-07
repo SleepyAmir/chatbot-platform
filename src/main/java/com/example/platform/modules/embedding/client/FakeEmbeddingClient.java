@@ -26,7 +26,7 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-@Profile({"local", "dev"})
+@Profile({"local", "dev", "prod"})
 public class FakeEmbeddingClient implements EmbeddingClient {
 
     /** باید با ستون vector(384) در qa_embeddings/pgvector و با OpenAiEmbeddingClient یکی باشد. */

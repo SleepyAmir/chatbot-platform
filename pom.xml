@@ -200,45 +200,17 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>${frontend-maven-plugin.version}</version>
-				<configuration>
-					<workingDirectory>frontend</workingDirectory>
-					<installDirectory>${project.build.directory}</installDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>install-node-and-npm</id>
-						<goals>
-							<goal>install-node-and-npm</goal>
-						</goals>
-						<configuration>
-							<nodeVersion>${node.version}</nodeVersion>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm-install</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>install</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm-build</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<phase>generate-resources</phase>
-						<configuration>
-							<arguments>run build</arguments>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!--
+				frontend-maven-plugin حذف شد (نه فقط کامنت روی چیزی که کار می‌کرد):
+				این پلاگین فقط npm install + npm run build رو روی پوشه‌ی frontend/ اجرا می‌کرد،
+				بدون این‌که خروجیش (frontend/dist) جایی (مثل src/main/resources/static) کپی بشه -
+				یعنی نصفه‌کاره بود: هم build بک‌اند رو کند می‌کرد (~۴ دقیقه نصب node/npm)، هم چون
+				Dockerfile پوشه‌ی frontend رو اصلاً COPY نمی‌کرد، توی build داکر می‌شکست.
+				فرانت React قراره جدا وصل بشه (نه داخل همین jar)، پس فعلاً به این پلاگین نیازی نیست.
+				اگه بعداً واقعاً خواستید فرانت رو داخل همین jar سرو کنید، باید هم این پلاگین رو
+				برگردونید، هم یه اجرای maven-resources-plugin اضافه کنید که frontend/dist رو به
+				target/classes/static کپی کنه، هم Dockerfile رو آپدیت کنید که پوشه‌ی frontend رو COPY کنه.
+			-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
