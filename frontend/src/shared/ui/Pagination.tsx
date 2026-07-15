@@ -5,6 +5,7 @@ type PaginationProps = {
 };
 
 export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+  const { t } = useTranslation();
   if (totalPages <= 1) {
     return null;
   }
@@ -17,10 +18,10 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         onClick={() => onPageChange(page - 1)}
         className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-40"
       >
-        قبلی
+        {t('common.previous')}
       </button>
       <span className="px-3 text-sm text-[var(--color-muted)]">
-        صفحه {page + 1} از {totalPages}
+        {t('common.pageOf', { page: page + 1, total: totalPages })}
       </span>
       <button
         type="button"
@@ -28,8 +29,9 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
         onClick={() => onPageChange(page + 1)}
         className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-semibold text-[var(--color-text)] transition hover:border-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-40"
       >
-        بعدی
+        {t('common.next')}
       </button>
     </div>
   );
 }
+import { useTranslation } from 'react-i18next';

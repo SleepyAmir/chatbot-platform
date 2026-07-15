@@ -8,15 +8,17 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const quickLinks = [
-  { to: '/', label: 'خانه', icon: Home, tone: 'var(--color-primary)' },
-  { to: '/courses', label: 'دوره‌ها', icon: GraduationCap, tone: 'var(--color-success)' },
-  { to: '/careers', label: 'مسیر شغلی', icon: BriefcaseBusiness, tone: 'var(--color-warning)' },
-  { to: '/chat', label: 'دستیار', icon: Bot, tone: 'var(--color-accent)' },
+  { to: '/', labelKey: 'nav.home', icon: Home, tone: 'var(--color-primary)' },
+  { to: '/courses', labelKey: 'courses.title', icon: GraduationCap, tone: 'var(--color-success)' },
+  { to: '/careers', labelKey: 'notFound.career', icon: BriefcaseBusiness, tone: 'var(--color-warning)' },
+  { to: '/chat', labelKey: 'notFound.assistant', icon: Bot, tone: 'var(--color-accent)' },
 ];
 
 export function NotFoundPage() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
 
   return (
@@ -49,15 +51,14 @@ export function NotFoundPage() {
         <div className="relative -mt-2">
           <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs font-bold text-[var(--color-primary)] shadow-sm">
             <Sparkles size={14} />
-            صفحه‌ای که دنبالش بودی اینجا نیست
+            {t('notFound.badge')}
           </span>
 
           <h1 className="mt-6 text-2xl font-black leading-10 sm:text-3xl">
-            گم شدی؟ نگران نباش — راه برگشت رو داری
+            {t('notFound.title')}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-8 text-[var(--color-muted)]">
-            آدرس <code dir="ltr" className="rounded-lg bg-[var(--color-surface-strong)] px-2 py-0.5 text-xs text-[var(--color-text)]">{pathname}</code>{' '}
-            در سامانه ثبت نشده. شاید لینک قدیمی باشه یا اشتباه تایپ شده.
+            {t('notFound.description', { path: pathname })}
           </p>
         </div>
 
@@ -67,14 +68,14 @@ export function NotFoundPage() {
             className="inline-flex items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[var(--color-primary-soft)] transition hover:-translate-y-0.5 hover:opacity-95"
           >
             <Home size={18} />
-            بازگشت به خانه
+            {t('notFound.home')}
           </Link>
           <Link
             to="/chat"
             className="inline-flex items-center gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3.5 text-sm font-bold text-[var(--color-text)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)]"
           >
             <Bot size={18} />
-            پرسیدن از دستیار
+            {t('notFound.askAssistant')}
           </Link>
         </div>
 
@@ -85,9 +86,9 @@ export function NotFoundPage() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="group flex items-center justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
+                className="group flex items-center justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-start shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
               >
-                <span className="text-sm font-bold text-[var(--color-text)]">{link.label}</span>
+                <span className="text-sm font-bold text-[var(--color-text)]">{t(link.labelKey)}</span>
                 <span
                   className="grid h-10 w-10 place-items-center rounded-2xl text-white transition group-hover:scale-105"
                   style={{ backgroundColor: link.tone }}
@@ -101,7 +102,7 @@ export function NotFoundPage() {
 
         <p className="mt-10 inline-flex items-center gap-2 text-xs text-[var(--color-muted)]">
           <ArrowRight size={14} className="rotate-180" />
-          MFTPlus — مسیر درست همیشه از منوی بالا هم در دسترسه
+          {t('notFound.footer')}
         </p>
       </div>
     </section>

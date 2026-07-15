@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
+import { ArrowUpRight, GraduationCap, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getCourses } from '../api/courses.api';
-import { Pagination, StateBlock } from '../shared/ui';
+import { PageHeader, Pagination, StateBlock } from '../shared/ui';
 import type { Course } from '../types/course';
 
 export function CoursesPage() {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState<Course[]>([]);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);
@@ -36,43 +39,51 @@ export function CoursesPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h3 className="text-xl font-bold">دوره‌ها</h3>
-          <p className="mt-1 text-sm text-[var(--color-muted)]">
-            فقط خواندنی — {totalElements} دوره
-          </p>
-        </div>
-        <input
-          value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
-          placeholder="جستجوی نام دوره..."
-          className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text)] outline-none ring-[var(--color-primary-soft)] placeholder:text-[var(--color-muted)] focus:ring-4"
-        />
-      </div>
+      <PageHeader
+        title={t('courses.title')}
+        description={t('courses.readOnlyCount', { count: totalElements })}
+        icon={<GraduationCap size={23} />}
+        action={(
+          <label className="flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 shadow-sm transition focus-within:border-[var(--color-primary)] focus-within:ring-4 focus-within:ring-[var(--color-primary-soft)]">
+            <Search size={18} className="shrink-0 text-[var(--color-muted)]" />
+            <input
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              placeholder={t('courses.search')}
+              className="min-w-0 flex-1 bg-transparent py-3 text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)]"
+            />
+          </label>
+        )}
+      />
 
-      {loading ? <StateBlock title="در حال دریافت دوره‌ها..." /> : null}
-      {error ? <StateBlock title="خطا در دریافت داده" description={error} /> : null}
+      {loading ? <StateBlock title={t('courses.loading')} /> : null}
+      {error ? <StateBlock title={t('courses.loadError')} description={error} /> : null}
 
       {!loading && !error ? (
         <>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {courses.length ? <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {courses.map((course) => (
               <Link
                 key={course.id}
                 to={`/courses/${course.id}`}
-                className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
+                className="group relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
               >
-                <span className="text-xs font-bold text-[var(--color-primary)]">#{course.id}</span>
-                <h4 className="mt-2 font-bold text-[var(--color-text)]">{course.name}</h4>
+                <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--color-primary),var(--color-accent))] opacity-0 transition group-hover:opacity-100" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[var(--color-surface-strong)] text-[var(--color-primary)] transition group-hover:bg-[var(--color-primary)] group-hover:text-white">
+                    <GraduationCap size={20} />
+                  </div>
+                  <span className="text-xs font-bold text-[var(--color-primary)]">#{course.id}</span>
+                </div>
+                <h4 className="mt-4 font-bold leading-7 text-[var(--color-text)]">{course.name}</h4>
                 {course.lessonUrl ? (
-                  <p className="mt-3 truncate text-sm text-[var(--color-primary)]">{course.lessonUrl}</p>
+                  <p className="mt-3 flex items-center gap-1.5 truncate text-sm text-[var(--color-primary)]"><ArrowUpRight size={15} />{course.lessonUrl}</p>
                 ) : (
-                  <p className="mt-3 text-sm text-[var(--color-muted)]">لینک درس ثبت نشده</p>
+                  <p className="mt-3 text-sm text-[var(--color-muted)]">{t('courses.noLessonLink')}</p>
                 )}
               </Link>
             ))}
-          </div>
+          </div> : <StateBlock title={t('empty.courses')} />}
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       ) : null}

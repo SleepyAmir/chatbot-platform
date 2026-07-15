@@ -1,10 +1,13 @@
 import { FormEvent, useEffect, useState } from 'react';
+import { BriefcaseBusiness, Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { createCareer, getCareers } from '../api/careers.api';
-import { Pagination, StateBlock } from '../shared/ui';
+import { PageHeader, Pagination, StateBlock } from '../shared/ui';
 import type { Career } from '../types/career';
 
 export function CareersPage() {
+  const { t } = useTranslation();
   const [careers, setCareers] = useState<Career[]>([]);
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(0);
@@ -54,48 +57,53 @@ export function CareersPage() {
   return (
     <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
       <section className="space-y-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h3 className="text-xl font-bold">مسیرهای شغلی</h3>
-            <p className="mt-1 text-sm text-[var(--color-muted)]">CRUD کامل ماژول Career & Job Market</p>
-          </div>
-          <input
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder="جستجوی عنوان شغل..."
-            className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text)] outline-none ring-[var(--color-primary-soft)] placeholder:text-[var(--color-muted)] focus:ring-4"
-          />
-        </div>
+        <PageHeader
+          title={t('careers.pageTitle')}
+          description={t('careers.subtitle')}
+          icon={<BriefcaseBusiness size={23} />}
+          action={(
+            <label className="flex items-center gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 shadow-sm transition focus-within:border-[var(--color-primary)] focus-within:ring-4 focus-within:ring-[var(--color-primary-soft)]">
+              <Search size={18} className="shrink-0 text-[var(--color-muted)]" />
+              <input value={keyword} onChange={(event) => setKeyword(event.target.value)} placeholder={t('careers.search')} className="min-w-0 flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-[var(--color-muted)]" />
+            </label>
+          )}
+        />
 
-        {loading ? <StateBlock title="در حال دریافت مشاغل..." /> : null}
-        {error ? <StateBlock title="خطا" description={error} /> : null}
+        {loading ? <StateBlock title={t('careers.loading')} /> : null}
+        {error ? <StateBlock title={t('common.error')} description={error} /> : null}
 
         {!loading && !error ? (
           <>
-            <div className="grid gap-4 md:grid-cols-2">
+            {careers.length ? <div className="grid gap-4 md:grid-cols-2">
               {careers.map((career) => (
                 <Link
                   key={career.id}
                   to={`/careers/${career.id}`}
-                  className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-[var(--shadow-card)]"
+                  className="group relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[var(--color-warning)] hover:shadow-[var(--shadow-card)]"
                 >
-                  <span className="text-xs font-bold text-[var(--color-warning)]">#{career.id}</span>
-                  <h4 className="mt-2 font-bold text-[var(--color-text)]">{career.title}</h4>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[color-mix(in_oklab,var(--color-warning)_16%,transparent)] text-[var(--color-warning)] transition group-hover:scale-105"><BriefcaseBusiness size={20} /></div>
+                    <span className="text-xs font-bold text-[var(--color-warning)]">#{career.id}</span>
+                  </div>
+                  <h4 className="mt-4 font-bold leading-7 text-[var(--color-text)]">{career.title}</h4>
                   <p className="mt-3 line-clamp-3 text-sm leading-7 text-[var(--color-muted)]">
-                    {career.description || 'توضیحی برای این شغل ثبت نشده است.'}
+                    {career.description || t('careers.noDescription')}
                   </p>
                 </Link>
               ))}
-            </div>
+            </div> : <StateBlock title={t('empty.careers')} />}
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </>
         ) : null}
       </section>
 
-      <form onSubmit={handleSubmit} className="h-fit rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card)]">
-        <h4 className="font-bold">افزودن مسیر شغلی</h4>
+      <form onSubmit={handleSubmit} className="h-fit rounded-[2rem] border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[var(--shadow-card)] xl:sticky xl:top-28">
+        <div className="flex items-center gap-3 border-b border-[var(--color-border)] pb-4">
+          <div className="grid h-10 w-10 place-items-center rounded-2xl bg-[var(--color-primary)] text-white"><Plus size={19} /></div>
+          <h4 className="font-bold">{t('careers.addCareer')}</h4>
+        </div>
         <label className="mt-4 block text-sm text-[var(--color-muted)]">
-          عنوان *
+          {t('careers.titleLabel')}
           <input
             required
             value={title}
@@ -104,7 +112,7 @@ export function CareersPage() {
           />
         </label>
         <label className="mt-4 block text-sm text-[var(--color-muted)]">
-          توضیحات
+          {t('careers.description')}
           <textarea
             value={description}
             onChange={(event) => setDescription(event.target.value)}
@@ -113,7 +121,7 @@ export function CareersPage() {
           />
         </label>
         <label className="mt-4 block text-sm text-[var(--color-muted)]">
-          لینک منبع
+          {t('careers.sourceUrl')}
           <input
             value={sourceUrl}
             onChange={(event) => setSourceUrl(event.target.value)}
@@ -124,7 +132,7 @@ export function CareersPage() {
           disabled={saving}
           className="mt-4 w-full rounded-2xl bg-[var(--color-primary)] px-4 py-3 font-bold text-white shadow-lg shadow-[var(--color-primary-soft)] disabled:opacity-60"
         >
-          {saving ? 'در حال ذخیره...' : 'ذخیره'}
+          {saving ? t('common.saving') : t('common.save')}
         </button>
       </form>
     </div>

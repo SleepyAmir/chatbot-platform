@@ -3,16 +3,16 @@ import type { LucideIcon } from 'lucide-react';
 
 type NavigationItem = {
   to: string;
-  label: string;
+  labelKey: string;
   icon: LucideIcon;
   disabled?: boolean;
 };
 
 export const mainNavigation: NavigationItem[] = [
-  { to: '/', label: 'خانه', icon: Home },
-  { to: '/courses', label: 'دپارتمان‌ها', icon: GraduationCap },
-  { to: '/careers', label: 'مسیرهای شغلی', icon: BriefcaseBusiness },
-  { to: '/faq', label: 'سوالات متداول', icon: HelpCircle },
-  { to: '/ocr', label: 'استعلام مدارک', icon: ImagePlus },
-  { to: '/chat', label: 'دستیار آموزشی', icon: Bot },
+  { to: '/', labelKey: 'nav.home', icon: Home },
+  { to: '/courses', labelKey: 'nav.departments', icon: GraduationCap },
+  { to: '/careers', labelKey: 'nav.careers', icon: BriefcaseBusiness },
+  { to: '/faq', labelKey: 'nav.faq', icon: HelpCircle },
+  { to: '/ocr', labelKey: 'nav.ocr', icon: ImagePlus },
+  { to: '/chat', labelKey: 'nav.assistant', icon: Bot },
 ];

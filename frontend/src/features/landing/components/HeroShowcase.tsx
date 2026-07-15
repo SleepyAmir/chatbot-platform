@@ -1,87 +1,128 @@
-import { ArrowLeft, Sparkles } from 'lucide-react';
-import { departmentTags, heroCards } from '../data/landingContent';
+import { ArrowLeft, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { heroCards } from '../data/landingContent';
+
+const slideDuration = 5_000;
 
 export function HeroShowcase() {
+  const { t } = useTranslation();
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const remainingTime = useRef(slideDuration);
+  const timerStartedAt = useRef(Date.now());
+  const departmentTags = t('landing.tags', { returnObjects: true }) as string[];
+  const heroContent = t('landing.heroes', { returnObjects: true }) as Array<{ title: string; subtitle: string }>;
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    timerStartedAt.current = Date.now();
+    const timer = window.setTimeout(() => {
+      remainingTime.current = slideDuration;
+      setActiveSlide((current) => (current + 1) % heroCards.length);
+    }, remainingTime.current);
+
+    return () => window.clearTimeout(timer);
+  }, [activeSlide, isPaused]);
+
+  const showPrevious = () => {
+    remainingTime.current = slideDuration;
+    setActiveSlide((current) => (current - 1 + heroCards.length) % heroCards.length);
+  };
+
+  const showNext = () => {
+    remainingTime.current = slideDuration;
+    setActiveSlide((current) => (current + 1) % heroCards.length);
+  };
+
+  const pauseSlider = () => {
+    remainingTime.current = Math.max(0, remainingTime.current - (Date.now() - timerStartedAt.current));
+    setIsPaused(true);
+  };
+
   return (
-    <section className="grid items-center gap-8 py-6 lg:grid-cols-[1.25fr_0.85fr] lg:gap-10 lg:py-14">
-      <div className="relative order-2 min-h-[520px] sm:min-h-[430px] lg:order-1 lg:min-h-[390px]">
-        <div className="absolute inset-x-4 top-8 h-80 rounded-[2rem] bg-[var(--color-surface-strong)] shadow-[var(--shadow-card)] sm:inset-x-8 sm:h-72 sm:rounded-[2.2rem]" />
-        <div className="absolute inset-x-2 top-4 h-80 rotate-[-2deg] rounded-[2rem] bg-[color-mix(in_oklab,var(--color-text)_16%,var(--color-surface))] shadow-[var(--shadow-card)] sm:inset-x-4 sm:h-72 sm:rotate-[-3deg] sm:rounded-[2.2rem]" />
-        <article className="relative rounded-[2rem] border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-[var(--shadow-card)] sm:rounded-[2.4rem] sm:p-4">
-          <div className="grid min-h-[460px] overflow-hidden rounded-[1.5rem] bg-[var(--color-page)] sm:min-h-80 sm:rounded-[1.8rem] md:grid-cols-[0.9fr_1.1fr]">
-            <div className="relative flex items-center justify-center overflow-hidden bg-[color-mix(in_oklab,var(--color-accent)_18%,var(--color-surface))] p-5">
-              <img
-                src={heroCards[0].image}
-                alt={heroCards[0].title}
-                className="h-44 w-44 rounded-full object-cover ring-8 ring-white/40 sm:h-56 sm:w-56"
-              />
-              <span className="absolute bottom-6 right-6 rounded-full bg-[var(--color-surface)] px-3 py-1 text-xs font-bold text-[var(--color-accent)] shadow">
-                آنلاین
-              </span>
-            </div>
-            <div className="flex flex-col justify-center p-5 sm:p-7">
-              <span className="mb-4 w-fit rounded-full bg-[color-mix(in_oklab,var(--color-primary)_14%,transparent)] px-4 py-2 text-xs font-bold text-[var(--color-primary)]">
-                دپارتمان منتخب
-              </span>
-              <h2 className="text-xl font-black leading-9 sm:text-2xl sm:leading-10">{heroCards[0].title}</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--color-muted)]">{heroCards[0].subtitle}</p>
-              <div className="mt-6 grid grid-cols-1 gap-2 text-xs font-semibold text-[var(--color-muted)] sm:grid-cols-2">
-                {departmentTags.slice(0, 6).map((tag) => (
-                  <span key={tag} className="rounded-full bg-[var(--color-surface)] px-3 py-2">
-                    {tag}
-                  </span>
-                ))}
+    <section className="grid items-center gap-8 py-4 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12 lg:py-12">
+      <div
+        className="group relative order-2 overflow-hidden rounded-[2.5rem] border border-white/20 bg-slate-950 shadow-[0_32px_90px_rgb(15_23_42/24%)] lg:order-1"
+        onMouseEnter={pauseSlider}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <div className="relative min-h-[470px] sm:min-h-[520px] lg:min-h-[560px]">
+          {heroCards.map((card, index) => (
+            <div
+              key={card.image}
+              className={`absolute inset-0 transition-all duration-700 ease-out ${index === activeSlide ? 'scale-100 opacity-100' : 'pointer-events-none scale-105 opacity-0'}`}
+              aria-hidden={index !== activeSlide}
+            >
+              <img src={card.image} alt={heroContent[index].title} className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04)_15%,rgba(2,6,23,0.88)_100%)]" />
+              <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-9">
+                <span className="inline-flex rounded-full border border-white/20 bg-white/15 px-3 py-1.5 text-xs font-bold backdrop-blur-md">
+                  {t('landing.selectedDepartment')}
+                </span>
+                <h2 className="mt-4 max-w-xl text-2xl font-black leading-10 sm:text-3xl">{heroContent[index].title}</h2>
+                <p className="mt-2 max-w-lg text-sm leading-7 text-white/78 sm:text-base">{heroContent[index].subtitle}</p>
               </div>
             </div>
-          </div>
-          <button className="absolute left-4 top-1/2 hidden h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-[var(--color-surface)] text-[var(--color-text)] shadow-lg sm:grid">
-            <ArrowLeft size={20} />
-          </button>
-        </article>
-        <div className="mt-5 flex justify-center gap-2">
-          {heroCards.map((card, index) => (
-            <span
-              key={card.title}
-              className={`h-2 rounded-full transition-all ${index === 0 ? 'w-8 bg-[var(--color-primary)]' : 'w-2 bg-[var(--color-border)]'}`}
-            />
           ))}
+
+          <button type="button" onClick={showPrevious} aria-label={t('common.previous')} className="absolute left-4 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/20 text-white opacity-90 backdrop-blur-md transition hover:scale-105 hover:bg-white hover:text-slate-950 sm:left-5">
+            <ChevronLeft size={21} />
+          </button>
+          <button type="button" onClick={showNext} aria-label={t('common.next')} className="absolute right-4 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-black/20 text-white opacity-90 backdrop-blur-md transition hover:scale-105 hover:bg-white hover:text-slate-950 sm:right-5">
+            <ChevronRight size={21} />
+          </button>
+
+          <div className="absolute inset-x-6 top-6 z-10 flex items-center justify-between gap-4 sm:inset-x-8">
+            <div className="flex gap-2">
+              {heroCards.map((card, index) => (
+                <button
+                  key={card.image}
+                  type="button"
+                  onClick={() => { remainingTime.current = slideDuration; setActiveSlide(index); }}
+                  aria-label={`${index + 1}`}
+                  className={`h-2 rounded-full transition-all ${index === activeSlide ? 'w-8 bg-white' : 'w-2 bg-white/45 hover:bg-white/75'}`}
+                />
+              ))}
+            </div>
+            <span className="rounded-full border border-white/20 bg-black/20 px-3 py-1 text-xs font-bold text-white backdrop-blur-md">
+              {String(activeSlide + 1).padStart(2, '0')} / {String(heroCards.length).padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+
+        <div className="absolute inset-x-7 bottom-3 z-20 h-0.5 overflow-hidden rounded-full bg-white/20">
+          <span key={activeSlide} className={`slide-progress block h-full origin-left rounded-full bg-white/80 ${isPaused ? 'paused' : ''}`} />
         </div>
       </div>
 
-      <div className="order-1 space-y-5 lg:order-2 lg:space-y-6">
-        <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-bold text-[var(--color-primary)]">
+      <div className="order-1 space-y-6 lg:order-2">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm font-bold text-[var(--color-primary)] shadow-sm">
           <Sparkles size={17} />
-          پلتفرم آموزشی هوشمند
+          {t('landing.platformBadge')}
         </span>
         <div>
-          <h1 className="max-w-xl text-3xl font-black leading-[1.55] sm:text-4xl md:text-5xl">
-            مسیر آموزش تا بازار کار را هوشمند انتخاب کن
+          <h1 className="max-w-2xl text-3xl font-black leading-[1.5] sm:text-4xl md:text-5xl">
+            {t('landing.title')}
           </h1>
-          <p className="mt-4 max-w-xl text-sm leading-8 text-[var(--color-muted)] sm:mt-5 sm:text-base sm:leading-9">
-            این نسخه، پایه فرانت برای سامانه چت‌بات آموزشی است؛ با تمرکز روی دوره‌ها،
-            مسیرهای شغلی، OCR مدارک و تجربه کاربری مدرن برای توسعه تیمی.
+          <p className="mt-5 max-w-xl text-sm leading-8 text-[var(--color-muted)] sm:text-base sm:leading-9">
+            {t('landing.description')}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <a
-            href="/careers"
-            className="rounded-full bg-[var(--color-primary)] px-6 py-3 text-sm font-black text-white shadow-lg shadow-[var(--color-primary-soft)] transition hover:-translate-y-0.5"
-          >
-            مشاهده مسیرهای شغلی
-          </a>
-          <a
-            href="/chat"
-            className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3 text-sm font-black text-[var(--color-text)] transition hover:-translate-y-0.5"
-          >
-            شروع گفت‌وگو
-          </a>
+          <Link to="/careers" className="inline-flex items-center gap-2 rounded-2xl bg-[var(--color-primary)] px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-[var(--color-primary-soft)] transition hover:-translate-y-1">
+            {t('landing.viewCareers')}
+            <ArrowLeft size={17} />
+          </Link>
+          <Link to="/chat" className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-3.5 text-sm font-black text-[var(--color-text)] shadow-sm transition hover:-translate-y-1 hover:border-[var(--color-primary)]">
+            {t('landing.startChat')}
+          </Link>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           {departmentTags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-xs font-bold text-[var(--color-muted)]"
-            >
+            <span key={tag} className="rounded-full border border-[var(--color-border)] bg-[color-mix(in_oklab,var(--color-surface)_86%,transparent)] px-4 py-2 text-xs font-bold text-[var(--color-muted)]">
               {tag}
             </span>
           ))}

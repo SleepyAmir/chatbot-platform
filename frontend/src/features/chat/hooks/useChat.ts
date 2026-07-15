@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getChatSessionHistory, sendChatMessage, sendChatWithFile } from '../../../api/chat.api';
 import type { ChatUiMessage } from '../../../types/chat';
 
@@ -18,6 +19,7 @@ function mapHistoryToUi(messages: { role: 'user' | 'assistant'; content: string;
 }
 
 export function useChat() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatUiMessage[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(() => sessionStorage.getItem(SESSION_STORAGE_KEY));
   const [loading, setLoading] = useState(false);
@@ -89,7 +91,7 @@ export function useChat() {
           const errorMessage: ChatUiMessage = {
             id: createMessageId(),
             role: 'assistant',
-            content: response.error || 'پاسخی دریافت نشد.',
+            content: response.error || t('chat.noResponse'),
             timestamp: new Date(),
             error: true,
           };
@@ -100,12 +102,12 @@ export function useChat() {
         const assistantMessage: ChatUiMessage = {
           id: createMessageId(),
           role: 'assistant',
-          content: response.answer || 'پاسخی دریافت نشد.',
+          content: response.answer || t('chat.noResponse'),
           timestamp: new Date(),
         };
         setMessages((current) => [...current, assistantMessage]);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'خطا در ارسال پیام';
+        const message = err instanceof Error ? err.message : t('chat.sendError');
         setError(message);
         setMessages((current) => [
           ...current,
@@ -121,7 +123,7 @@ export function useChat() {
         setLoading(false);
       }
     },
-    [loading, persistSessionId, sessionId],
+    [loading, persistSessionId, sessionId, t],
   );
 
   return {
