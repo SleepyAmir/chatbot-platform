@@ -37,6 +37,30 @@ export async function apiRequest<T>(
   }
 }
 
+/** For endpoints that return raw JSON without ApiResponse wrapper (e.g. /api/chat-sessions). */
+export async function rawRequest<T>(
+  path: string,
+  options: AxiosRequestConfig & { body?: unknown } = {},
+): Promise<T> {
+  try {
+    const { body, data, ...config } = options;
+    const response = await httpClient.request<T>({
+      url: path,
+      data: data ?? body,
+      ...config,
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const payload = error.response?.data as { message?: string } | undefined;
+      throw new Error(payload?.message || error.message || 'Request failed');
+    }
+
+    throw error;
+  }
+}
+
 export function toQueryString(params: Record<string, string | number | undefined | null>) {
   const searchParams = new URLSearchParams();
 
